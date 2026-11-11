@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Application drafts collection (NoSQL cache)
+    match /application_drafts/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // System audit logs
+    match /audit_logs/{logId} {
+      allow read: if request.auth != null;
+      allow write: if true;
+    }
+
+    // Outbound notifications queue
+    match /notification_queue/{queueId} {
+      allow read: if request.auth != null;
+      allow write: if true;
+    }
+  }
+}

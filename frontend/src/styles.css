@@ -1,0 +1,178 @@
+/* Global Styles for IEM Admission Portal */
+:root {
+  --iem-primary: #1e3a8a;
+  --iem-primary-dark: #0f172a;
+  --iem-accent: #f59e0b;
+  --iem-secondary: #0284c7;
+  --iem-success: #10b981;
+  --iem-danger: #ef4444;
+  --iem-border: #e2e8f0;
+  --iem-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --iem-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--iem-font);
+  color: #1e293b;
+  background-color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+}
+
+code, pre {
+  font-family: var(--iem-mono);
+}
+
+.bg-iem-primary {
+  background-color: var(--iem-primary) !important;
+}
+
+.text-iem-primary {
+  color: var(--iem-primary) !important;
+}
+
+.border-iem-primary {
+  border-color: var(--iem-primary) !important;
+}
+
+.btn-iem-primary {
+  background-color: var(--iem-primary);
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-iem-primary:hover {
+  background-color: #172554;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25);
+}
+
+.btn-iem-outline {
+  border: 2px solid var(--iem-primary);
+  color: var(--iem-primary);
+  background: transparent;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.55rem 1.3rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-iem-outline:hover {
+  background-color: var(--iem-primary);
+  color: white;
+}
+
+.card-custom {
+  background: #ffffff;
+  border: 1px solid var(--iem-border);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-custom:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.badge-status {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 30px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-submitted {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-under-review {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.badge-approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.badge-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-completed {
+  background-color: #ede9fe;
+  color: #5b21b6;
+}
+
+/* Stepper styles */
+.stepper-container {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.stepper-container::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 30px;
+  right: 30px;
+  height: 4px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+
+.stepper-step {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+}
+
+.stepper-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin: 0 auto 0.5rem;
+  color: #64748b;
+  transition: all 0.3s ease;
+}
+
+.stepper-step.active .stepper-circle {
+  border-color: var(--iem-primary);
+  background-color: var(--iem-primary);
+  color: white;
+  box-shadow: 0 0 0 6px rgba(30, 58, 138, 0.15);
+}
+
+.stepper-step.completed .stepper-circle {
+  border-color: var(--iem-success);
+  background-color: var(--iem-success);
+  color: white;
+}
+
+.stepper-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.stepper-step.active .stepper-title,
+.stepper-step.completed .stepper-title {
+  color: #0f172a;
+}

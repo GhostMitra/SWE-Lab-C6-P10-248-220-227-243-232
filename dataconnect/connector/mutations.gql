@@ -1,0 +1,29 @@
+# Mutations for Firebase Data Connect (SQL Engine on PostgreSQL)
+
+mutation CreateApplication(
+  $applicationId: String!
+  $userId: Int!
+  $courseId: Int!
+  $status: String!
+) @auth(level: USER) {
+  application_insert(data: {
+    applicationId: $applicationId
+    userId: $userId
+    courseId: $courseId
+    status: $status
+  })
+}
+
+mutation UpdateApplicationStatus(
+  $applicationId: String!
+  $status: String!
+  $reviewRemarks: String
+) @auth(level: USER) {
+  application_update(
+    id: $applicationId
+    data: {
+      status: $status
+      reviewRemarks: $reviewRemarks
+    }
+  )
+}

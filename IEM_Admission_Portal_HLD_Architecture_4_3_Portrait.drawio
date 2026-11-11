@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" modified="2026-11-05T18:28:34.152Z" agent="Antigravity" version="21.0.0" type="device">
+  <diagram id="iem-hld-4-3" name="IEM Admission Portal HLD Architecture Diagram (4:3 Portrait)">
+    <mxGraphModel dx="1200" dy="1600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1600" math="0" shadow="0">
+      <root>
+<mxCell id="0" />
+<mxCell id="1" parent="0" />
+
+  <mxCell id="page_title" value="&lt;b&gt;&lt;font style=&quot;font-size: 21px;&quot;&gt;IEM ADMISSION PORTAL — HIGH-LEVEL ARCHITECTURE (HLD)&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+    <mxGeometry x="200" y="16" width="800" height="35" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="box_l1" value="1. CLIENT LAYER (Presentation &amp; User Interfaces)" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=1.5;fontStyle=1;fontSize=12.5;align=center;collapsible=0;" vertex="1" parent="1">
+    <mxGeometry x="40" y="65" width="1120" height="210" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="cli_web" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Applicant Web Portal&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #0284c7;&quot;&gt;(Responsive Web App / React)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 5px 0; border: 0; border-top: 1px solid #38bdf8;&quot;&gt;• Student Registration &amp;amp; Secure Login&lt;br&gt;• Admission Form Submission &amp;amp; Preview&lt;br&gt;• Document Upload (Marksheets, ID, Photo)&lt;br&gt;• Online Fee Payment &amp;amp; Admit Letter Download" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=12;spacingRight=10;spacingTop=6;spacingBottom=6;fontSize=11;fillColor=#f0f9ff;strokeColor=#0284c7;strokeWidth=1.5;" vertex="1" parent="box_l1">
+    <mxGeometry x="35" y="46" width="320" height="140" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="cli_mob" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Applicant Mobile App&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #16a34a;&quot;&gt;(Android &amp;amp; iOS / Cross-Platform)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 5px 0; border: 0; border-top: 1px solid #4ade80;&quot;&gt;• Real-Time Application Status Alerts&lt;br&gt;• Instant Push Notifications &amp;amp; Reminders&lt;br&gt;• Quick Document Scanning &amp;amp; Upload&lt;br&gt;• Payment Receipt &amp;amp; Status Verification" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=12;spacingRight=10;spacingTop=6;spacingBottom=6;fontSize=11;fillColor=#f0fdf4;strokeColor=#16a34a;strokeWidth=1.5;" vertex="1" parent="box_l1">
+    <mxGeometry x="400" y="46" width="320" height="140" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="cli_adm" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Staff &amp;amp; Admin Dashboard&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #9333ea;&quot;&gt;(Admin Web Console / React)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 5px 0; border: 0; border-top: 1px solid #c084fc;&quot;&gt;• Document Verification &amp;amp; Audit Queue&lt;br&gt;• Application Review (Approve / Reject)&lt;br&gt;• Merit List Generation &amp;amp; Seat Allotment&lt;br&gt;• Real-Time Admission &amp;amp; Revenue Analytics" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=12;spacingRight=10;spacingTop=6;spacingBottom=6;fontSize=11;fillColor=#faf5ff;strokeColor=#9333ea;strokeWidth=1.5;" vertex="1" parent="box_l1">
+    <mxGeometry x="765" y="46" width="320" height="140" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="edge_c_to_gateway" value="HTTPS (Secure TLS 1.3 / REST APIs &amp; WebSockets)" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#0284c7;fontSize=11;fontStyle=1;endFill=1;" edge="1" parent="1">
+    <mxGeometry relative="1" as="geometry">
+      <mxPoint x="600" y="275" as="sourcePoint" />
+      <mxPoint x="600" y="315" as="targetPoint" />
+    </mxGeometry>
+  </mxCell>
+
+
+  <mxCell id="box_l2" value="2. EDGE &amp; SECURITY LAYER (API Gateway, Firewall &amp; Access Control)" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=1.5;fontStyle=1;fontSize=12.5;align=center;collapsible=0;" vertex="1" parent="1">
+    <mxGeometry x="40" y="315" width="1120" height="165" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="edge_waf" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;DNS &amp;amp; Cloud Security&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #ea580c;&quot;&gt;(Cloudflare WAF)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #fb923c;&quot;&gt;• DDoS Mitigation &amp;amp; Bot Defense&lt;br&gt;• Edge SSL / TLS 1.3 Termination&lt;br&gt;• Static Asset Caching (CDN Acceleration)" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=10;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#fff7ed;strokeColor=#ea580c;strokeWidth=1.5;" vertex="1" parent="box_l2">
+    <mxGeometry x="35" y="44" width="310" height="105" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="edge_gw" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;API Gateway &amp;amp; Reverse Proxy&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #334155;&quot;&gt;(Nginx Gateway / Load Balancer)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #94a3b8;&quot;&gt;• Dynamic Request Routing to Microservices&lt;br&gt;• Rate Limiting &amp;amp; Request Throttling&lt;br&gt;• High-Availability Traffic Load Balancing" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=10;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#f1f5f9;strokeColor=#334155;strokeWidth=1.5;" vertex="1" parent="box_l2">
+    <mxGeometry x="390" y="44" width="340" height="105" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="edge_auth" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Identity &amp;amp; Auth Provider&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #dc2626;&quot;&gt;(JWT &amp;amp; RBAC Security)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #f87171;&quot;&gt;• JWT Token Verification &amp;amp; Blacklist Check&lt;br&gt;• Role-Based Access Control (RBAC)&lt;br&gt;• Secure Credential Hashing (Argon2 / bcrypt)" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=10;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#fef2f2;strokeColor=#dc2626;strokeWidth=1.5;" vertex="1" parent="box_l2">
+    <mxGeometry x="775" y="44" width="310" height="105" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="link_e1_e2" value="" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#475569;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="box_l2" source="edge_waf" target="edge_gw">
+    <mxGeometry relative="1" as="geometry" />
+  </mxCell>
+  <mxCell id="link_e2_e3" value="Auth Check" style="endArrow=block;startArrow=block;html=1;strokeWidth=1.5;strokeColor=#dc2626;fontSize=9.5;fontStyle=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="box_l2" source="edge_gw" target="edge_auth">
+    <mxGeometry relative="1" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="edge_gw_to_back" value="Routed Internal API Requests (Fast REST / gRPC)" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#1e293b;fontSize=11;fontStyle=1;endFill=1;" edge="1" parent="1">
+    <mxGeometry relative="1" as="geometry">
+      <mxPoint x="600" y="480" as="sourcePoint" />
+      <mxPoint x="600" y="520" as="targetPoint" />
+    </mxGeometry>
+  </mxCell>
+
+
+  <mxCell id="box_l3" value="3. APPLICATION LAYER (Core Backend Services &amp; Business Logic)" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=1.5;fontStyle=1;fontSize=12.5;align=center;collapsible=0;" vertex="1" parent="1">
+    <mxGeometry x="40" y="520" width="1120" height="245" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="svc_user" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;User &amp;amp; Auth Service&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #475569;&quot;&gt;(Node.js / Express)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #94a3b8;&quot;&gt;• User Account Registration&lt;br&gt;• Student &amp;amp; Officer Logins&lt;br&gt;• Profile &amp;amp; Contact Info Update&lt;br&gt;• Role &amp;amp; Permission Enforcement" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=8;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=1.5;" vertex="1" parent="box_l3">
+    <mxGeometry x="30" y="46" width="250" height="180" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="svc_app" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Application Service&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #0284c7;&quot;&gt;(Node.js / Express)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #38bdf8;&quot;&gt;• Multi-step Form Submission&lt;br&gt;• Document Upload &amp;amp; Verification&lt;br&gt;• Form Validation &amp;amp; Eligibility Check&lt;br&gt;• Review Workflow (Approve/Reject)" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=8;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#f0f9ff;strokeColor=#0284c7;strokeWidth=1.5;" vertex="1" parent="box_l3">
+    <mxGeometry x="300" y="46" width="250" height="180" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="svc_pay" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Payment Service&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #d97706;&quot;&gt;(Node.js / Express)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #fbbf24;&quot;&gt;• Application Fee Calculation&lt;br&gt;• Payment Order &amp;amp; Intent Initiation&lt;br&gt;• Webhook Event Reconciliation&lt;br&gt;• Receipt &amp;amp; Status Ledger Record" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=8;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#fefce8;strokeColor=#d97706;strokeWidth=1.5;" vertex="1" parent="box_l3">
+    <mxGeometry x="570" y="46" width="250" height="180" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="svc_notif" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Notification &amp;amp; Reports&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #16a34a;&quot;&gt;(Node.js / Express)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #4ade80;&quot;&gt;• Email &amp;amp; SMS Dispatch Queue&lt;br&gt;• Application Status Notifications&lt;br&gt;• Admission Letter PDF Generation&lt;br&gt;• Admin Analytics &amp;amp; Merit Reports" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=8;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#f0fdf4;strokeColor=#16a34a;strokeWidth=1.5;" vertex="1" parent="box_l3">
+    <mxGeometry x="840" y="46" width="250" height="180" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="link_svc_bus" value="" style="endArrow=none;html=1;strokeWidth=1;strokeColor=#94a3b8;dashed=1;" edge="1" parent="box_l3">
+    <mxGeometry relative="1" as="geometry">
+      <mxPoint x="280" y="136" as="sourcePoint" />
+      <mxPoint x="840" y="136" as="targetPoint" />
+    </mxGeometry>
+  </mxCell>
+
+
+  <mxCell id="edge_back_to_data" value="Database Queries &amp; File Storage Access (SQL / AWS SDK)" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#1e293b;fontSize=11;fontStyle=1;endFill=1;" edge="1" parent="1">
+    <mxGeometry relative="1" as="geometry">
+      <mxPoint x="600" y="765" as="sourcePoint" />
+      <mxPoint x="600" y="805" as="targetPoint" />
+    </mxGeometry>
+  </mxCell>
+
+
+  <mxCell id="box_l4" value="4. DATA &amp; PERSISTENCE LAYER (Relational Database, Object Storage &amp; Cache)" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=1.5;fontStyle=1;fontSize=12.5;align=center;collapsible=0;" vertex="1" parent="1">
+    <mxGeometry x="40" y="805" width="1120" height="235" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="data_rdbms" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Primary Relational DB&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #1d4ed8;&quot;&gt;(PostgreSQL / ACID Compliant)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 5px 0; border: 0; border-top: 1px solid #60a5fa;&quot;&gt;• &lt;b&gt;Users Table:&lt;/b&gt; Logins, Hashed Passwords, Roles&lt;br&gt;• &lt;b&gt;Applications Table:&lt;/b&gt; Personal &amp;amp; Academic Data&lt;br&gt;• &lt;b&gt;Payments Table:&lt;/b&gt; Txn IDs, Invoices &amp;amp; Status&lt;br&gt;• &lt;b&gt;Audit Trail:&lt;/b&gt; Officer Review Decisions &amp;amp; Logs" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;align=left;spacingLeft=12;spacingRight=10;spacingTop=14;spacingBottom=6;fontSize=10.5;fillColor=#eff6ff;strokeColor=#1d4ed8;strokeWidth=1.5;" vertex="1" parent="box_l4">
+    <mxGeometry x="45" y="46" width="320" height="170" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="data_s3" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Cloud Object Storage&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #ea580c;&quot;&gt;(AWS S3 / Cloud Storage)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 5px 0; border: 0; border-top: 1px solid #fb923c;&quot;&gt;• &lt;b&gt;Academic Docs:&lt;/b&gt; 10th &amp;amp; 12th Marksheet PDFs&lt;br&gt;• &lt;b&gt;Candidate Media:&lt;/b&gt; Passport Photos &amp;amp; Signatures&lt;br&gt;• &lt;b&gt;Verification Certs:&lt;/b&gt; Identity Proofs &amp;amp; Categories&lt;br&gt;• &lt;b&gt;Generated Letters:&lt;/b&gt; Official Admission Letters" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;align=left;spacingLeft=12;spacingRight=10;spacingTop=14;spacingBottom=6;fontSize=10.5;fillColor=#fff7ed;strokeColor=#ea580c;strokeWidth=1.5;" vertex="1" parent="box_l4">
+    <mxGeometry x="400" y="46" width="320" height="170" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="data_redis" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;In-Memory Cache &amp;amp; Queue&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #dc2626;&quot;&gt;(Redis)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 5px 0; border: 0; border-top: 1px solid #f87171;&quot;&gt;• &lt;b&gt;Session Store:&lt;/b&gt; Active JWT Authentication Tokens&lt;br&gt;• &lt;b&gt;Form Caching:&lt;/b&gt; High-Speed Draft Auto-save&lt;br&gt;• &lt;b&gt;Rate Limiting:&lt;/b&gt; API Abuse Prevention Counters&lt;br&gt;• &lt;b&gt;Task Queue:&lt;/b&gt; Background Email / SMS Dispatch" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;align=left;spacingLeft=12;spacingRight=10;spacingTop=14;spacingBottom=6;fontSize=10.5;fillColor=#fef2f2;strokeColor=#dc2626;strokeWidth=1.5;" vertex="1" parent="box_l4">
+    <mxGeometry x="755" y="46" width="320" height="170" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="edge_data_to_ext" value="External Integrations &amp; Platform Telemetry" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#1e293b;fontSize=11;fontStyle=1;endFill=1;" edge="1" parent="1">
+    <mxGeometry relative="1" as="geometry">
+      <mxPoint x="600" y="1040" as="sourcePoint" />
+      <mxPoint x="600" y="1080" as="targetPoint" />
+    </mxGeometry>
+  </mxCell>
+
+
+  <mxCell id="box_l5" value="5. EXTERNAL SERVICES &amp; INFRASTRUCTURE PLATFORM" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=1.5;fontStyle=1;fontSize=12.5;align=center;collapsible=0;" vertex="1" parent="1">
+    <mxGeometry x="40" y="1080" width="1120" height="235" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="ext_pay" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Payment Gateway&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #d97706;&quot;&gt;(Razorpay / Stripe / UPI)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #fbbf24;&quot;&gt;• Secure Credit/Debit Card Checkout&lt;br&gt;• UPI, NetBanking &amp;amp; Digital Wallets&lt;br&gt;• Webhook Callback Notifications&lt;br&gt;• PCI-DSS Compliant Security" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=8;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#fefce8;strokeColor=#d97706;strokeWidth=1.5;" vertex="1" parent="box_l5">
+    <mxGeometry x="30" y="46" width="250" height="165" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="ext_notif" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Notification Gateways&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #16a34a;&quot;&gt;(SendGrid / Twilio API)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #4ade80;&quot;&gt;• Transactional Email Delivery (SendGrid)&lt;br&gt;• Instant SMS &amp;amp; OTP Gateway (Twilio)&lt;br&gt;• Automated Status Alerts &amp;amp; Invoices&lt;br&gt;• Delivery Status &amp;amp; Bounce Handling" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=8;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#f0fdf4;strokeColor=#16a34a;strokeWidth=1.5;" vertex="1" parent="box_l5">
+    <mxGeometry x="300" y="46" width="250" height="165" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="ext_infra" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Deployment Platform&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #475569;&quot;&gt;(Docker &amp;amp; Kubernetes / Cloud Run)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #94a3b8;&quot;&gt;• Microservices Containerization&lt;br&gt;• Automatic Horizontal Scaling on Peak&lt;br&gt;• Zero-Downtime Rolling Deployments&lt;br&gt;• Isolated Production Environment" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=8;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=1.5;" vertex="1" parent="box_l5">
+    <mxGeometry x="570" y="46" width="250" height="165" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="ext_mon" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;Monitoring &amp;amp; Logs&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9.5px; color: #ea580c;&quot;&gt;(Prometheus &amp;amp; Grafana)&lt;/font&gt;&lt;/div&gt;&lt;hr style=&quot;margin: 4px 0; border: 0; border-top: 1px solid #fb923c;&quot;&gt;• Service Health &amp;amp; Latency Metrics&lt;br&gt;• Real-time Operations Dashboard&lt;br&gt;• Centralized Log Aggregation&lt;br&gt;• Automated Alerts for Downtime" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=10;spacingRight=8;spacingTop=6;spacingBottom=6;fontSize=10.5;fillColor=#fff7ed;strokeColor=#ea580c;strokeWidth=1.5;" vertex="1" parent="box_l5">
+    <mxGeometry x="840" y="46" width="250" height="165" as="geometry" />
+  </mxCell>
+
+
+  <mxCell id="leg_box" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#94a3b8;strokeWidth=1.5;fillColor=#ffffff;" vertex="1" parent="1">
+    <mxGeometry x="40" y="1355" width="1120" height="130" as="geometry" />
+  </mxCell>
+  <mxCell id="leg_title" value="&lt;b&gt;HIGH-LEVEL ARCHITECTURE (HLD) NOTATION &amp;amp; COLOR KEY&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=11.5;fontStyle=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+    <mxGeometry x="60" y="1365" width="1080" height="22" as="geometry" />
+  </mxCell>
+
+  <!-- Key Items -->
+  <mxCell id="leg_k1" value="Client / UI Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f9ff;strokeColor=#0284c7;strokeWidth=1.2;fontSize=10;align=center;" vertex="1" parent="1">
+    <mxGeometry x="60" y="1400" width="130" height="30" as="geometry" />
+  </mxCell>
+  <mxCell id="leg_k2" value="Edge Gateway / WAF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f5f9;strokeColor=#334155;strokeWidth=1.2;fontSize=10;align=center;" vertex="1" parent="1">
+    <mxGeometry x="210" y="1400" width="140" height="30" as="geometry" />
+  </mxCell>
+  <mxCell id="leg_k3" value="Backend Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#16a34a;strokeWidth=1.2;fontSize=10;align=center;" vertex="1" parent="1">
+    <mxGeometry x="370" y="1400" width="130" height="30" as="geometry" />
+  </mxCell>
+  <mxCell id="leg_k4" value="Database / Object Storage" style="shape=cylinder3;whiteSpace=wrap;html=1;size=6;fillColor=#eff6ff;strokeColor=#1d4ed8;strokeWidth=1.2;fontSize=10;align=center;" vertex="1" parent="1">
+    <mxGeometry x="520" y="1396" width="170" height="36" as="geometry" />
+  </mxCell>
+  <mxCell id="leg_k5" value="External 3rd-Party API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fefce8;strokeColor=#d97706;strokeWidth=1.2;fontSize=10;align=center;" vertex="1" parent="1">
+    <mxGeometry x="710" y="1400" width="150" height="30" as="geometry" />
+  </mxCell>
+  <mxCell id="leg_k6" value="Infra &amp; Monitoring" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#ea580c;strokeWidth=1.2;fontSize=10;align=center;" vertex="1" parent="1">
+    <mxGeometry x="880" y="1400" width="140" height="30" as="geometry" />
+  </mxCell>
+
+  <!-- Flow keys -->
+  <mxCell id="leg_flow1" value="&lt;b&gt;Solid Arrow:&lt;/b&gt; Synchronous HTTPS / REST API / Database Query" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+    <mxGeometry x="80" y="1443" width="430" height="24" as="geometry" />
+  </mxCell>
+  <mxCell id="leg_flow2" value="&lt;b&gt;Dashed Arrow:&lt;/b&gt; Asynchronous Webhook / Telemetry / Background Task Queue" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+    <mxGeometry x="550" y="1443" width="490" height="24" as="geometry" />
+  </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+
+echo "======================================================================"
+echo "  IEM ADMISSION PORTAL — FIREBASE DEPLOYMENT SCRIPT"
+echo "  Target Project: iem-admission-404bn"
+echo "======================================================================"
+echo ""
+
+echo "[1/3] Building Angular Production Frontend..."
+cd frontend
+npm run build
+cd ..
+
+echo ""
+echo "[2/3] Setting Firebase project to iem-admission-404bn..."
+npx firebase-tools use iem-admission-404bn
+
+echo ""
+echo "[3/3] Deploying to Firebase..."
+npx firebase-tools deploy --only hosting,firestore,storage
+
+echo ""
+echo "======================================================================"
+echo "  DEPLOYMENT SUCCESSFUL!"
+echo "  Live URL: https://iem-admission-404bn.web.app"
+echo "  Console:  https://console.firebase.google.com/project/iem-admission-404bn/overview"
+echo "======================================================================"

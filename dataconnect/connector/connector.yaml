@@ -1,0 +1,5 @@
+connectorId: "admission-connector"
+generate:
+  javascriptSdk:
+    outputDir: "../../frontend/src/app/dataconnect-sdk"
+    package: "@iem/admission-client"

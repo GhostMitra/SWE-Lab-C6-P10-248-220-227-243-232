@@ -1,0 +1,11 @@
+specVersion: "v1alpha"
+serviceId: "iem-admission-service"
+location: "us-central1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "iem_admissions_db"
+      cloudSql:
+        instanceId: "iem-admissions-pg-instance"
+connectorDirs: ["./connector"]

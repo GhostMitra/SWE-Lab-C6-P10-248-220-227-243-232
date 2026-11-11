@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" modified="2026-11-05T17:45:00.000Z" agent="Antigravity" version="21.0.0" type="device">
+  <diagram id="iem-dfd-4-3" name="IEM Admission Portal DFD (4:3 Portrait)">
+    <mxGraphModel dx="1200" dy="1600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="&lt;b&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;IEM ADMISSION PORTAL — DFD (CONTEXT &amp;amp; LEVEL-1)&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="250" y="20" width="700" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- SECTION 1: CONTEXT DIAGRAM (LEVEL-0) -->
+        <mxCell id="box_l0" value="CONTEXT DIAGRAM (LEVEL-0)" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#f8f9fa;strokeColor=#4a5568;strokeWidth=1.5;fontStyle=1;fontSize=14;align=center;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="65" width="1120" height="400" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l0_ent_student" value="&lt;b&gt;Applicant /&lt;br&gt;Student&lt;/b&gt;" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#e2e8f0;strokeColor=#475569;fontSize=13;align=center;" vertex="1" parent="box_l0">
+          <mxGeometry x="40" y="65" width="160" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l0_ent_officer" value="&lt;b&gt;Admission&lt;br&gt;Officer&lt;/b&gt;" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#e2e8f0;strokeColor=#475569;fontSize=13;align=center;" vertex="1" parent="box_l0">
+          <mxGeometry x="40" y="265" width="160" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l0_proc_portal" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;0&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;&lt;font style=&quot;font-size: 15px;&quot;&gt;IEM ADMISSION&lt;br&gt;PORTAL&lt;/font&gt;&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=2.5;fontSize=14;align=center;" vertex="1" parent="box_l0">
+          <mxGeometry x="480" y="115" width="170" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l0_ent_pay" value="&lt;b&gt;Payment&lt;br&gt;Gateway&lt;/b&gt;" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#e2e8f0;strokeColor=#475569;fontSize=13;align=center;" vertex="1" parent="box_l0">
+          <mxGeometry x="920" y="65" width="160" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l0_ent_notify" value="&lt;b&gt;Email / SMS&lt;br&gt;Service&lt;/b&gt;" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#e2e8f0;strokeColor=#475569;fontSize=13;align=center;" vertex="1" parent="box_l0">
+          <mxGeometry x="920" y="265" width="160" height="75" as="geometry" />
+        </mxCell>
+
+        <!-- Level-0 Flows -->
+        <mxCell id="l0_flow_s1" value="Registration &amp;amp; Login Details" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;exitX=1;exitY=0.2;entryX=0;entryY=0.15;" edge="1" source="l0_ent_student" target="l0_proc_portal" parent="box_l0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l0_flow_s2" value="Admission Form &amp;amp; Documents" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.35;" edge="1" source="l0_ent_student" target="l0_proc_portal" parent="box_l0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l0_flow_s3" value="Fee Payment Details" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;exitX=1;exitY=0.8;entryX=0;entryY=0.55;" edge="1" source="l0_ent_student" target="l0_proc_portal" parent="box_l0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l0_flow_s4" value="Status, Notifications &amp;amp; Admit Letter" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;entryX=0.8;entryY=1;exitX=0.08;exitY=0.8;" edge="1" source="l0_proc_portal" target="l0_ent_student" parent="box_l0">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="168" y="235" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="l0_flow_o1" value="Review Decisions (Approve/Reject)" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;exitX=1;exitY=0.3;entryX=0.2;entryY=0.9;" edge="1" source="l0_ent_officer" target="l0_proc_portal" parent="box_l0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l0_flow_o2" value="Applications List &amp;amp; Verification Details" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;entryX=1;entryY=0.75;exitX=0.4;exitY=1;" edge="1" source="l0_proc_portal" target="l0_ent_officer" parent="box_l0">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="490" y="322" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="l0_flow_p1" value="Payment Request (Fee)" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;exitX=0.9;exitY=0.2;entryX=0;entryY=0.35;" edge="1" source="l0_proc_portal" target="l0_ent_pay" parent="box_l0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l0_flow_p2" value="Payment Status (Success/Failure)" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;exitX=0;exitY=0.75;entryX=0.98;entryY=0.4;" edge="1" source="l0_ent_pay" target="l0_proc_portal" parent="box_l0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l0_flow_n1" value="Notification Payload (Email/SMS)" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;exitX=0.9;exitY=0.8;entryX=0;entryY=0.35;" edge="1" source="l0_proc_portal" target="l0_ent_notify" parent="box_l0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l0_flow_n2" value="Delivery Confirmation" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;exitX=0;exitY=0.75;entryX=0.75;entryY=0.95;" edge="1" source="l0_ent_notify" target="l0_proc_portal" parent="box_l0">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="322" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- SECTION 2: LEVEL-1 DFD -->
+        <mxCell id="box_l1" value="LEVEL-1 DFD" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#f8f9fa;strokeColor=#4a5568;strokeWidth=1.5;fontStyle=1;fontSize=14;align=center;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="490" width="1120" height="960" as="geometry" />
+        </mxCell>
+
+        <!-- Entities Level-1 -->
+        <mxCell id="l1_ent_student" value="&lt;b&gt;Applicant /&lt;br&gt;Student&lt;/b&gt;" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#e2e8f0;strokeColor=#475569;fontSize=13;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="40" y="240" width="160" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_ent_officer" value="&lt;b&gt;Admission&lt;br&gt;Officer&lt;/b&gt;" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#e2e8f0;strokeColor=#475569;fontSize=13;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="920" y="480" width="160" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_ent_pay" value="&lt;b&gt;Payment&lt;br&gt;Gateway&lt;/b&gt;" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#e2e8f0;strokeColor=#475569;fontSize=13;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="190" y="845" width="170" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_ent_notify" value="&lt;b&gt;Email / SMS&lt;br&gt;Service&lt;/b&gt;" style="html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#e2e8f0;strokeColor=#475569;fontSize=13;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="770" y="845" width="170" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Processes Level-1 -->
+        <mxCell id="l1_proc1" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;1.0&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Manage&lt;br&gt;Registration&lt;br&gt;&amp;amp; Login" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=2;fontSize=12;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="320" y="50" width="120" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_proc2" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;2.0&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Manage&lt;br&gt;Admission&lt;br&gt;Application" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=2;fontSize=12;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="320" y="270" width="120" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_proc3" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;3.0&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Process&lt;br&gt;Application&lt;br&gt;Fee" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=2;fontSize=12;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="320" y="640" width="120" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_proc4" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;4.0&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Review &amp;amp;&lt;br&gt;Evaluate&lt;br&gt;Application" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=2;fontSize=12;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="690" y="370" width="120" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_proc5" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;5.0&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Dispatch&lt;br&gt;Notifications&lt;br&gt;&amp;amp; Admit Letter" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=2;fontSize=12;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="690" y="640" width="120" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Data Stores Level-1 -->
+        <mxCell id="ds_d1" value="&lt;b&gt;D1&lt;/b&gt; | Users / Accounts" style="shape=partialRectangle;top=0;bottom=0;fillColor=#f1f5f9;strokeColor=#334155;strokeWidth=2;fontSize=12;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="630" y="85" width="230" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ds_d2" value="&lt;b&gt;D2&lt;/b&gt; | Applications, Docs &amp;amp; Status" style="shape=partialRectangle;top=0;bottom=0;fillColor=#f1f5f9;strokeColor=#334155;strokeWidth=2;fontSize=12;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="615" y="235" width="260" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ds_d3" value="&lt;b&gt;D3&lt;/b&gt; | Payment Transactions" style="shape=partialRectangle;top=0;bottom=0;fillColor=#f1f5f9;strokeColor=#334155;strokeWidth=2;fontSize=12;align=center;" vertex="1" parent="box_l1">
+          <mxGeometry x="450" y="770" width="240" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Flows Level-1 -->
+        <mxCell id="l1_f_reg" value="Registration &amp;amp; Login Credentials" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.6;exitY=0;entryX=0;entryY=0.5;" edge="1" source="l1_ent_student" target="l1_proc1" parent="box_l1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="136" y="110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l1_f_resp" value="Login Auth Token" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.2;exitY=0.9;entryX=0.85;entryY=0;" edge="1" source="l1_proc1" target="l1_ent_student" parent="box_l1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="176" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="l1_f_d1_w" value="User Record" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=1;exitY=0.35;entryX=0;entryY=0.3;" edge="1" source="l1_proc1" target="ds_d1" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l1_f_d1_r" value="User Verification" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0;exitY=0.75;entryX=1;entryY=0.7;" edge="1" source="ds_d1" target="l1_proc1" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_app" value="Admission Form &amp;amp; Documents" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=1;exitY=0.65;entryX=0;entryY=0.5;" edge="1" source="l1_ent_student" target="l1_proc2" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_d2_w" value="Application &amp;amp; Document Data" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.9;exitY=0.15;entryX=0;entryY=0.5;" edge="1" source="l1_proc2" target="ds_d2" parent="box_l1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="258" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="l1_f_trig_pay" value="Fee Due Trigger" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="l1_proc2" target="l1_proc3" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_pay_info" value="Payment Details" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.35;exitY=1;entryX=0;entryY=0.2;" edge="1" source="l1_ent_student" target="l1_proc3" parent="box_l1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="96" y="664" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="l1_f_receipt" value="Receipt &amp;amp; Acknowledgment" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;entryX=0.7;entryY=1;exitX=0;entryY=0.6;" edge="1" source="l1_proc3" target="l1_ent_student" parent="box_l1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="152" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="l1_f_pg_req" value="Charge Request" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.2;exitY=0.9;entryX=0.5;entryY=0;" edge="1" source="l1_proc3" target="l1_ent_pay" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l1_f_pg_res" value="Status (Success/Fail)" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;entryX=0.4;entryY=1;exitX=0.8;exitY=0;" edge="1" source="l1_ent_pay" target="l1_proc3" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_d3_w" value="Payment Record" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.9;exitY=0.8;entryX=0;entryY=0.5;" edge="1" source="l1_proc3" target="ds_d3" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_d2_r" value="Retrieve Application &amp;amp; Docs" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="ds_d2" target="l1_proc4" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_off_fetch" value="Applications Overview" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=1;exitY=0.35;entryX=0;entryY=0.35;" edge="1" source="l1_proc4" target="l1_ent_officer" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l1_f_off_dec" value="Verification &amp;amp; Decision" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" edge="1" source="l1_ent_officer" target="l1_proc4" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_status_w" value="Update Status (Approved/Rejected)" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.2;exitY=0.1;entryX=0.8;entryY=1;" edge="1" source="l1_proc4" target="ds_d2" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_4_to_5" value="Application Decision Event" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="l1_proc4" target="l1_proc5" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_sms_send" value="Send Message" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0.7;exitY=1;entryX=0.5;entryY=0;" edge="1" source="l1_proc5" target="l1_ent_notify" parent="box_l1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="l1_f_notif_student" value="Notifications &amp;amp; Confirmation / Admit Letter" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;exitX=0;exitY=0.5;entryX=0.5;entryY=1;" edge="1" source="l1_proc5" target="l1_ent_student" parent="box_l1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="560" y="700" />
+              <mxPoint x="120" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- SECTION 3: LEGEND -->
+        <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1470" width="1120" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_title" value="&lt;b&gt;DFD NOTATION LEGEND&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;" vertex="1" parent="legend_box">
+          <mxGeometry x="480" y="4" width="160" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="leg_e" value="&lt;b&gt;External Entity&lt;/b&gt;" style="html=1;whiteSpace=wrap;strokeWidth=1.5;fillColor=#e2e8f0;strokeColor=#475569;fontSize=11;align=center;" vertex="1" parent="legend_box">
+          <mxGeometry x="60" y="35" width="140" height="42" as="geometry" />
+        </mxCell>
+
+        <mxCell id="leg_p" value="&lt;b&gt;#.0&lt;/b&gt;&lt;br&gt;Process" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1e293b;strokeWidth=1.5;fontSize=11;align=center;" vertex="1" parent="legend_box">
+          <mxGeometry x="310" y="30" width="65" height="52" as="geometry" />
+        </mxCell>
+
+        <mxCell id="leg_ds" value="&lt;b&gt;D#&lt;/b&gt; | Data Store" style="shape=partialRectangle;top=0;bottom=0;fillColor=#f1f5f9;strokeColor=#334155;strokeWidth=1.5;fontSize=11;align=center;" vertex="1" parent="legend_box">
+          <mxGeometry x="490" y="36" width="160" height="38" as="geometry" />
+        </mxCell>
+
+        <mxCell id="leg_flow" value="Data Flow (Labeled with Data)" style="endArrow=block;html=1;strokeWidth=1.5;strokeColor=#1e293b;fontSize=11;endFill=1;" edge="1" parent="legend_box">
+          <mxGeometry x="780" y="55" width="220" height="20" as="geometry">
+            <mxPoint x="780" y="55" as="sourcePoint" />
+            <mxPoint x="1000" y="55" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

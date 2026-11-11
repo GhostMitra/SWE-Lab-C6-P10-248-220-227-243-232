@@ -1,0 +1,73 @@
+# Firebase Data Connect GraphQL Schema (PostgreSQL SQL Database)
+# Maps directly to IEM Admission Portal Relational Architecture
+
+type User @table {
+  userId: Int! @default(autoincrement: true)
+  fullName: String!
+  email: String! @unique
+  phone: String
+  role: String! # APPLICANT | ADMISSION_OFFICER | ADMINISTRATOR
+  firebaseUid: String
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type Applicant @table {
+  applicantId: Int! @default(autoincrement: true)
+  user: User!
+  dateOfBirth: Date
+  gender: String
+  address: String
+  guardianName: String
+  tenthPercentage: Float
+  twelfthPercentage: Float
+  twelfthStream: String
+}
+
+type Course @table {
+  courseId: Int! @default(autoincrement: true)
+  courseCode: String! @unique
+  courseName: String!
+  degree: String!
+  durationYears: Int!
+  eligibilityCriteria: String!
+  minTenthPercentage: Float
+  minTwelfthPercentage: Float
+  seats: Int!
+  applicationFee: Float!
+  isOpen: Boolean!
+}
+
+type Application @table {
+  applicationId: String! @unique
+  user: User!
+  course: Course!
+  status: String! # SUBMITTED | UNDER_REVIEW | APPROVED | REJECTED | COMPLETED
+  applicationDate: Timestamp! @default(expr: "request.time")
+  reviewRemarks: String
+  reviewedBy: User
+  reviewedAt: Timestamp
+}
+
+type Document @table {
+  documentId: Int! @default(autoincrement: true)
+  application: Application!
+  docType: String! # MARKSHEET_10 | MARKSHEET_12 | IDENTITY_PROOF | PHOTO_SIGNATURE
+  fileName: String!
+  filePath: String!
+  fileSize: Int
+  mimeType: String
+  verificationStatus: String! # PENDING | VERIFIED | REJECTED
+  verificationNotes: String
+  uploadedAt: Timestamp! @default(expr: "request.time")
+}
+
+type Payment @table {
+  paymentId: String! @unique
+  application: Application!
+  amount: Float!
+  paymentDate: Timestamp! @default(expr: "request.time")
+  status: String! # INITIATED | SUCCESS | FAILED | REFUNDED
+  transactionId: String @unique
+  paymentMethod: String
+  invoiceNumber: String
+}

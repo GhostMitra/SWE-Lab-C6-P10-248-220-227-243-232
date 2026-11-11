@@ -1,0 +1,43 @@
+<div class="d-flex flex-column min-vh-100">
+  <!-- Top Navigation Bar -->
+  <app-navbar></app-navbar>
+
+  <!-- Main View Area -->
+  <main class="flex-grow-1">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white-50 py-4 mt-auto border-top border-secondary">
+    <div class="container px-4">
+      <div class="row g-4 align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+          <div class="d-flex align-items-center gap-2 justify-content-center justify-content-md-start mb-1">
+            <span class="badge bg-primary text-white fw-bold">IEM KOLKATA</span>
+            <span class="fw-bold text-white small">Department of Computer Science & Engineering</span>
+          </div>
+          <div class="small">
+            PCCCS594 — Software Engineering & Project Management Laboratory | 5th Semester
+          </div>
+          <div class="small text-muted mt-1">
+            Project: <strong>IEM Admission System</strong> | Team: <strong>404 Brain Not Found (Group 10)</strong>
+          </div>
+        </div>
+
+        <div class="col-md-6 text-center text-md-end">
+          <div class="small text-white fw-semibold mb-1">Team Members & Assigned Roles:</div>
+          <div class="small text-muted" style="font-size: 0.76rem;">
+            Debarghya Mitra (PM - 248) • Arka Ghosh Dastider (UI/UX - 220) • Diptomoy Das (Full-Stack - 227)<br>
+            Jitesh Jana (QA - 243) • Jatin Kumar (Architect - 232)
+          </div>
+          <div class="mt-2">
+            <span class="badge bg-light text-dark font-monospace" style="font-size: 0.68rem;">Angular & Express</span>
+            <span class="badge bg-light text-dark font-monospace ms-1" style="font-size: 0.68rem;">Firebase Data Connect SQL</span>
+            <span class="badge bg-light text-dark font-monospace ms-1" style="font-size: 0.68rem;">Firebase Cloud Firestore NoSQL</span>
+            <span class="badge bg-light text-dark font-monospace ms-1" style="font-size: 0.68rem;">Cloud Storage Bucket</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
