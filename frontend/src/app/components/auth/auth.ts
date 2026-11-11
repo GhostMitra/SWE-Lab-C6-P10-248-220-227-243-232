@@ -140,10 +140,10 @@ import { FirebaseService } from '../../services/firebase.service';
               </div>
               <div class="d-grid gap-2">
                 <button type="button" class="btn btn-sm btn-light border text-start d-flex justify-content-between align-items-center px-3 py-2"
-                        (click)="quickLogin('applicant@iem.edu.in', 'Student@123')">
+                        (click)="quickLogin('student@iem.edu.in', 'Student@123')">
                   <div>
                     <div class="fw-bold small text-primary"><i class="bi bi-person-fill me-1"></i>Student / Applicant</div>
-                    <div class="text-muted" style="font-size: 0.72rem;">applicant&#64;iem.edu.in (Debarghya Mitra)</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">student&#64;iem.edu.in (Debarghya Mitra)</div>
                   </div>
                   <span class="badge bg-primary">Sign In</span>
                 </button>
@@ -184,7 +184,7 @@ export class AuthComponent {
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
 
-  loginEmail = 'applicant@iem.edu.in';
+  loginEmail = 'student@iem.edu.in';
   loginPassword = 'Student@123';
 
   regFullName = '';
@@ -282,9 +282,10 @@ export class AuthComponent {
   }
 
   private redirectByRole(role: string): void {
-    if (role === 'ADMINISTRATOR') {
+    const r = (role || '').toUpperCase();
+    if (r === 'ADMINISTRATOR' || r === 'ADMIN') {
       this.router.navigate(['/admin']);
-    } else if (role === 'ADMISSION_OFFICER') {
+    } else if (r === 'ADMISSION_OFFICER' || r === 'OFFICER') {
       this.router.navigate(['/officer']);
     } else {
       this.router.navigate(['/student']);

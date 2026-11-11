@@ -91,7 +91,11 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email and password are required.' });
     }
 
-    const user = await UserModel.findByEmail(email);
+    let user = await UserModel.findByEmail(email);
+    if (!user && (email.toLowerCase() === 'applicant@iem.edu.in' || email.toLowerCase() === 'student@iem.edu.in')) {
+      const altEmail = email.toLowerCase() === 'applicant@iem.edu.in' ? 'student@iem.edu.in' : 'applicant@iem.edu.in';
+      user = await UserModel.findByEmail(altEmail);
+    }
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials. User not found.' });
     }

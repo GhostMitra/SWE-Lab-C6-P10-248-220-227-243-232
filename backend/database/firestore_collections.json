@@ -29,12 +29,12 @@
     },
     "103": {
       "userId": 103,
-      "fullName": "Test Applicant Jitesh",
-      "email": "test_1794418043329@iem.edu.in",
-      "passwordHash": "$2a$10$bRCtMAstZePkUTf0O11lI.nRzZ4DRYAsMhBpDNDwLpXetmXh5oKRe",
-      "phone": "9876500000",
+      "fullName": "Debarghya Mitra",
+      "email": "applicant@iem.edu.in",
+      "passwordHash": "$2a$10$/vB4wnpY1FgaxnoYTaUvPe1mqis/mS4Gc5Kf31ASq0d4HU5jqhVQG",
+      "phone": "9830000003",
       "role": "APPLICANT",
-      "createdAt": "2026-11-11T17:27:23.674Z"
+      "createdAt": "2026-11-11T19:08:23.387Z"
     },
     "104": {
       "userId": 104,
@@ -94,18 +94,10 @@
     "103": {
       "applicantId": 103,
       "userId": 103,
-      "dateOfBirth": "2004-03-21",
-      "gender": "Male",
-      "address": "Kolkata Sector V",
-      "updatedAt": "2026-11-11T17:27:23.847Z",
-      "guardianName": "A. Jana",
-      "tenthPercentage": 89.5,
-      "tenthBoard": "CBSE",
-      "tenthYear": null,
-      "twelfthPercentage": 91,
-      "twelfthBoard": "CBSE",
-      "twelfthYear": null,
-      "twelfthStream": "Science"
+      "dateOfBirth": "2004-06-15",
+      "gender": "MALE",
+      "address": "Kolkata, West Bengal, India",
+      "updatedAt": "2026-11-11T19:08:23.388Z"
     },
     "104": {
       "applicantId": 104,
@@ -408,7 +400,18 @@
       "draftSnapshot": {}
     }
   },
-  "documents": {},
+  "documents": {
+    "50": {
+      "docId": 50,
+      "applicationId": "APP-2026-4811",
+      "docType": "MARKSHEET_10",
+      "mimeType": "application/pdf",
+      "sizeBytes": 0,
+      "verificationStatus": "PENDING",
+      "verificationRemarks": "",
+      "uploadedAt": "2026-11-11T19:04:57.786Z"
+    }
+  },
   "payments": {
     "20": {
       "paymentId": 20,
@@ -532,6 +535,27 @@
     }
   },
   "audit_logs": [
+    {
+      "id": "FS-AUD-1794423897791-471",
+      "timestamp": "2026-11-11T19:04:57.791Z",
+      "actorId": 106,
+      "actorEmail": "test@test.com",
+      "actorRole": "APPLICANT",
+      "action": "UPLOAD_DOCUMENT",
+      "targetEntity": "DOCUMENTS",
+      "targetId": "undefined",
+      "details": "Uploaded MARKSHEET_10 (4141727573-noborders.pdf) to bucket academic-docs"
+    },
+    {
+      "id": "FS-AUD-1794423882047-487",
+      "timestamp": "2026-11-11T19:04:42.047Z",
+      "actorId": 106,
+      "actorEmail": "test@test.com",
+      "actorRole": "APPLICANT",
+      "action": "USER_LOGIN",
+      "targetEntity": "AUTH",
+      "details": "User logged in via credentials"
+    },
     {
       "id": "FS-AUD-1794420901611-822",
       "timestamp": "2026-11-11T18:15:01.611Z",
