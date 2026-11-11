@@ -17,8 +17,9 @@
 - **Live Production URL (Firebase Hosting):** [https://iem-admission-404bn.web.app](https://iem-admission-404bn.web.app)
 - **Alternate Domain:** [https://iem-admission-404bn.firebaseapp.com](https://iem-admission-404bn.firebaseapp.com)
 - **Firebase Project Console:** [https://console.firebase.google.com/project/iem-admission-404bn/overview](https://console.firebase.google.com/project/iem-admission-404bn/overview)
+- **GitHub Repository:** [https://github.com/GhostMitra/SWE-Lab-C6-P10-248-220-227-243-232](https://github.com/GhostMitra/SWE-Lab-C6-P10-248-220-227-243-232)
 - **Local Development Portal:** [http://localhost:5000](http://localhost:5000)
-- **Project ID:** `iem-admission-404bn`
+- **Firebase Project ID:** `iem-admission-404bn`
 
 ---
 
@@ -26,26 +27,29 @@
 
 This prototype is built according to the **SRS (Assignment 2)**, **HLD & System Modeling Diagrams (Assignment 3)**, and **Software Test Plan (Assignment 4)**.
 
-It implements a modern **hybrid persistence architecture** combining:
-1. **MEAN Stack**:
-   - **M** - MongoDB / Document Storage Layer (Draft auto-save, asynchronous notification queue, unformatted document audit logs).
-   - **E** - Express.js REST API Layer (Modular routing, Multer upload streaming, JWT & Firebase Auth).
-   - **A** - Angular 22 Single Page Application (Standalone components, reactive signals, responsive Bootstrap 5 interface).
-   - **N** - Node.js Runtime.
-2. **Relational SQL Database (Firebase Data Connect / PostgreSQL / SQLite)**:
+It implements a modern **100% Firebase & MEAN hybrid persistence architecture** (No MongoDB — pure Firebase NoSQL & SQL):
+1. **Frontend**:
+   - **Angular 22 Single Page Application**: Standalone components, reactive signals, responsive Bootstrap 5 interface, and Firebase Client SDK v10.
+2. **Backend Services & Cloud Functions**:
+   - **Express.js API Layer**: Modular routing, Multer upload streaming, JWT verification, and Firebase Admin SDK.
+   - **Firebase Cloud Functions**: Serverless runtime exportable via `backend/index.js` (`exports.api`).
+3. **NoSQL Database (Firebase Cloud Firestore)**:
+   - Application draft auto-saving (`application_drafts/{userId}`).
+   - Asynchronous notification queue (`notification_queue`).
+   - Unformatted audit logging (`audit_logs`).
+   - Security rules defined in `firestore.rules`.
+4. **Relational SQL Database (Firebase Data Connect / Cloud SQL / PostgreSQL Schema)**:
    - Strict relational schema matching the **UML Class Diagram** (`users`, `applicants`, `admission_officers`, `administrators`, `courses`, `applications`, `documents`, `payments`, `notifications`, `audit_trail`).
    - ACID transaction support, foreign key cascades, composite merit ranking, and eligibility checks.
-3. **Cloud Object Storage (Firebase Cloud Storage Bucket)**:
-   - Bucket URI: `gs://iem-admission-portal.appspot.com`
+   - Defined in `dataconnect/schema/schema.gql`, `dataconnect/connector/queries.gql`, and `backend/database/schema.sql`.
+5. **Cloud Object Storage (Firebase Cloud Storage Bucket)**:
+   - Bucket URI: `gs://iem-admission-404bn.appspot.com`
    - Sub-buckets:
      - `/academic-docs`: 10th & 12th Marksheet PDFs.
      - `/candidate-media`: Passport photos & signatures.
      - `/verification-certs`: Aadhaar / Government ID proofs.
      - `/generated-letters`: Official downloadable Provisional Admission Offer Letters.
-4. **Firebase Platform Integrations**:
-   - Firebase Authentication token exchange & mock fallback.
-   - Firebase Data Connect schema configuration (`dataconnect/schema/schema.gql` & `dataconnect.yaml`).
-   - Firebase Security Rules (`storage.rules`) and project configuration (`firebase.json`).
+   - Security rules defined in `storage.rules`.
 
 ---
 
@@ -73,25 +77,56 @@ The system is engineered from the ground up to be **100% Firebase-capable**, sup
 - **Connector Queries & Mutations**: Defined in [`dataconnect/connector/queries.gql`](file:///C:/Users/debarghaya/Projects/SWE-Lab/dataconnect/connector/queries.gql) and [`dataconnect/connector/mutations.gql`](file:///C:/Users/debarghaya/Projects/SWE-Lab/dataconnect/connector/mutations.gql).
 
 ### E. Deploying to Firebase
+
+#### Option 1: 1-Click Deployment Script
+- **Windows (Command Prompt / PowerShell)**:
+  ```cmd
+  deploy.bat
+  ```
+- **Linux / macOS**:
+  ```bash
+  chmod +x deploy.sh
+  ./deploy.sh
+  ```
+*This compiles the Angular production bundle, sets the Firebase project to `iem-admission-404bn`, and deploys Hosting, Firestore rules/indexes, and Storage rules.*
+
+#### Option 2: Automated GitHub Actions CI/CD (Deploy on Git Push)
+A GitHub Actions workflow is pre-configured at [`.github/workflows/firebase-deploy.yml`](file:///.github/workflows/firebase-deploy.yml).
+
+Every time code is pushed to `master` or `main`:
+1. Installs backend and frontend dependencies.
+2. Runs the automated test suite (PCCCS594 TC-S01 to TC-S07).
+3. Compiles the Angular production distribution (`npm run build`).
+4. Automatically deploys to Firebase Hosting via `FirebaseExtended/action-hosting-deploy`.
+
+To enable automatic GitHub deployment:
+1. Generate a Firebase CI token via `npx firebase-tools login:ci` OR obtain a service account JSON key from Firebase Console -> Project Settings -> Service accounts.
+2. In your GitHub repository, navigate to **Settings** > **Secrets and variables** > **Actions**.
+3. Add a repository secret:
+   - Name: `FIREBASE_TOKEN` (for CLI token) or `FIREBASE_SERVICE_ACCOUNT_IEM_ADMISSION_404BN` (for Service Account JSON).
+4. Any `git push` to `master` or `main` will automatically build and deploy to [https://iem-admission-404bn.web.app](https://iem-admission-404bn.web.app)!
+
+#### Option 3: Manual Firebase CLI
 1. **Link your Firebase Project**:
    ```bash
-   firebase use --add iem-admission-portal
+   npx firebase-tools use iem-admission-404bn
    ```
-2. **Deploy Hosting (Angular Frontend)**:
+2. **Build & Deploy Hosting (Angular Frontend)**:
    ```bash
-   firebase deploy --only hosting
+   cd frontend && npm run build && cd ..
+   npx firebase-tools deploy --only hosting
    ```
-3. **Deploy API (Firebase Cloud Functions)**:
+3. **Deploy Security Rules (Storage & Firestore)**:
    ```bash
-   firebase deploy --only functions
+   npx firebase-tools deploy --only storage,firestore
    ```
-4. **Deploy Security Rules & Data Connect**:
+4. **Deploy Backend API (Cloud Functions - requires Blaze Plan)**:
    ```bash
-   firebase deploy --only storage,firestore,dataconnect
+   npx firebase-tools deploy --only functions
    ```
 5. **Run Local Firebase Emulator Suite**:
    ```bash
-   firebase emulators:start
+   npx firebase-tools emulators:start
    ```
 
 ---
