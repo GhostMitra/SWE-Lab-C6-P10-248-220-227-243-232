@@ -31,7 +31,7 @@ export class FirebaseService {
     apiKey: "AIzaSyMockKeyForIEMAdmissionPortal2026",
     authDomain: "iem-admission-404bn.firebaseapp.com",
     projectId: "iem-admission-404bn",
-    storageBucket: "iem-admission-404bn.appspot.com",
+    storageBucket: "iem-admission-404bn.firebasestorage.app",
     messagingSenderId: "104857629384",
     appId: "1:104857629384:web:9f8e7d6c5b4a3"
   };

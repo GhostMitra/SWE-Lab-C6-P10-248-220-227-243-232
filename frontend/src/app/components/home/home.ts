@@ -76,7 +76,7 @@ import { ApiService, Course } from '../../services/api.service';
               <i class="bi bi-cloud-arrow-up fs-2 text-info"></i>
               <div>
                 <div class="fw-bold text-dark small">Cloud Storage Bucket</div>
-                <div class="text-muted" style="font-size: 0.75rem;">gs://iem-admission-404bn.appspot.com</div>
+                <div class="text-muted" style="font-size: 0.75rem;">gs://iem-admission-404bn.firebasestorage.app</div>
               </div>
             </div>
           </div>

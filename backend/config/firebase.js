@@ -14,7 +14,7 @@ let firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY || "AIzaSyMockKeyForIEMAdmissionPortal2026",
   authDomain: process.env.FIREBASE_AUTH_DOMAIN || "iem-admission-404bn.firebaseapp.com",
   projectId: process.env.FIREBASE_PROJECT_ID || "iem-admission-404bn",
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "iem-admission-404bn.appspot.com",
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "iem-admission-404bn.firebasestorage.app",
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "182328521276",
   appId: process.env.FIREBASE_APP_ID || "1:182328521276:web:9f8e7d6c5b4a3"
 };
@@ -259,6 +259,7 @@ module.exports = {
   verifyFirebaseToken,
   getFirebaseStatus,
   isFirebaseLive: () => isLive,
+  getLiveAccessToken,
   LiveFirestoreClient,
   toFirestoreFields,
   fromFirestoreFields

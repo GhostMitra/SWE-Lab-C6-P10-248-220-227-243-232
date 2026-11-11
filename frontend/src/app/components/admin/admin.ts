@@ -172,7 +172,7 @@ import { ApiService } from '../../services/api.service';
         <div class="card card-custom border-0 p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h5 class="fw-bold text-dark mb-0">Cloud Storage Bucket: <code>gs://iem-admission-portal.appspot.com</code></h5>
+              <h5 class="fw-bold text-dark mb-0">Cloud Storage Bucket: <code>gs://iem-admission-404bn.firebasestorage.app</code></h5>
               <small class="text-muted">Object storage repository separated into dedicated sub-buckets as per HLD Layer 4</small>
             </div>
           </div>

@@ -142,7 +142,7 @@ import { FirebaseService } from '../../services/firebase.service';
             <i class="bi bi-cloud-arrow-up-fill fs-4"></i>
             <div>
               <strong>Cloud Object Storage:</strong> Documents are streamed directly into our dedicated 
-              <code>gs://iem-admission-404bn.appspot.com</code> bucket and indexed into Firebase Cloud Firestore.
+              <code>gs://iem-admission-404bn.firebasestorage.app</code> bucket and indexed into Firebase Cloud Firestore.
             </div>
           </div>
 
@@ -489,7 +489,7 @@ export class ApplyComponent implements OnInit {
     this.api.uploadDocument(formData).subscribe({
       next: (res) => {
         this.uploading.set(false);
-        this.successMessage.set(`Document stored in gs://iem-admission-portal.appspot.com/${res.bucketStorage.subBucket}`);
+        this.successMessage.set(`Document stored in gs://iem-admission-404bn.firebasestorage.app/${res.bucketStorage.subBucket}`);
         this.selectedFile = null;
         this.loadApplicationDocs(this.activeAppId());
         setTimeout(() => this.successMessage.set(null), 3000);

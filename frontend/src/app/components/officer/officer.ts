@@ -172,7 +172,7 @@ import { ApiService, Application } from '../../services/api.service';
                 <tr *ngFor="let doc of selectedDossier()?.documents">
                   <td><span class="badge bg-secondary font-monospace">{{ doc.docType }}</span></td>
                   <td class="small fw-semibold">{{ doc.fileName }}</td>
-                  <td class="small font-monospace text-muted" style="font-size: 0.72rem;">gs://iem-admission-portal.appspot.com</td>
+                  <td class="small font-monospace text-muted" style="font-size: 0.72rem;">gs://iem-admission-404bn.firebasestorage.app</td>
                   <td>
                     <span class="badge" [ngClass]="{
                       'bg-success': doc.verificationStatus === 'VERIFIED',

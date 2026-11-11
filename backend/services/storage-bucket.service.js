@@ -11,10 +11,10 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getAdmin, isFirebaseLive, firebaseConfig } = require('../config/firebase');
+const { getAdmin, isFirebaseLive, firebaseConfig, getLiveAccessToken } = require('../config/firebase');
 
 const BUCKET_BASE_DIR = path.join(__dirname, '..', 'storage-bucket');
-const BUCKET_NAME = firebaseConfig.storageBucket || 'iem-admission-portal.appspot.com';
+const BUCKET_NAME = firebaseConfig.storageBucket || 'iem-admission-404bn.firebasestorage.app';
 
 const SUB_BUCKETS = {
   ACADEMIC_DOCS: 'academic-docs',
@@ -30,6 +30,35 @@ Object.values(SUB_BUCKETS).forEach(folder => {
     fs.mkdirSync(dir, { recursive: true });
   }
 });
+
+/**
+ * Direct Live Cloud Storage Upload Helper
+ */
+async function uploadToLiveCloudBucket(objectPath, buffer, contentType) {
+  try {
+    const token = getLiveAccessToken();
+    if (!token) return null;
+
+    const uploadUrl = `https://storage.googleapis.com/upload/storage/v1/b/${BUCKET_NAME}/o?uploadType=media&name=${encodeURIComponent(objectPath)}`;
+    const res = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': contentType || 'application/octet-stream'
+      },
+      body: buffer
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      console.log(`[Storage Bucket] Synced ${objectPath} to live Cloud Storage bucket: gs://${BUCKET_NAME}/${objectPath}`);
+      return data;
+    }
+  } catch (err) {
+    console.warn(`[Storage Bucket] Cloud sync for ${objectPath} notice:`, err.message);
+  }
+  return null;
+}
 
 /**
  * Determine destination bucket based on docType or category
@@ -66,23 +95,8 @@ async function uploadToBucket({ buffer, originalname, mimetype, docType, applica
   const bucketPath = `gs://${BUCKET_NAME}/${subBucket}/${filename}`;
   const publicUrl = `/api/storage/buckets/${subBucket}/${filename}`;
 
-  // If live Firebase Admin Storage is active, sync to cloud bucket
-  if (isFirebaseLive() && getAdmin()) {
-    try {
-      const bucket = getAdmin().storage().bucket();
-      await bucket.file(`${subBucket}/${filename}`).save(buffer, {
-        contentType: mimetype,
-        metadata: {
-          applicationId,
-          docType,
-          originalName: originalname
-        }
-      });
-      console.log(`[Storage Bucket] Synced ${filename} to live Firebase Cloud Storage bucket.`);
-    } catch (err) {
-      console.warn('[Storage Bucket] Cloud sync failed, using local bucket store:', err.message);
-    }
-  }
+  // Sync to live Google Cloud Storage bucket
+  uploadToLiveCloudBucket(`${subBucket}/${filename}`, buffer, mimetype).catch(() => {});
 
   return {
     bucketName: BUCKET_NAME,
@@ -169,6 +183,9 @@ function generateAdmissionLetter({ application, user, course, payment }) {
 </html>`;
 
   fs.writeFileSync(localDest, htmlContent, 'utf8');
+
+  // Sync admit letter to live Google Cloud Storage bucket
+  uploadToLiveCloudBucket(`${subBucket}/${filename}`, Buffer.from(htmlContent, 'utf8'), 'text/html').catch(() => {});
 
   return {
     bucketName: BUCKET_NAME,
