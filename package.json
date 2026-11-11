@@ -6,6 +6,7 @@
     "start": "node backend/index.js",
     "seed": "node backend/database/seed.js",
     "test": "node backend/test/integration-test.js",
+    "build": "cd frontend && npm install && npm run build",
     "build:frontend": "cd frontend && npm run build",
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
     "firebase:emulators": "firebase emulators:start",

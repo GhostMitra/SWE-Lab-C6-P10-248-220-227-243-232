@@ -90,12 +90,14 @@ The system is engineered from the ground up to be **100% Firebase-capable**, sup
   ```
 *This compiles the Angular production bundle, sets the Firebase project to `iem-admission-404bn`, and deploys Hosting, Firestore rules/indexes, and Storage rules.*
 
-#### Option 2: Automated GitHub Actions CI/CD (Deploy on Git Push)
-A GitHub Actions workflow is pre-configured at [`.github/workflows/firebase-deploy.yml`](file:///.github/workflows/firebase-deploy.yml).
+#### Option 2: Automated GitHub Actions CI/CD (Deploy on Merge & PR)
+GitHub Actions workflows are configured in `.github/workflows/`:
+- [`.github/workflows/firebase-hosting-merge.yml`](file:///.github/workflows/firebase-hosting-merge.yml): Triggered on push/merge to `master` or `main`.
+- [`.github/workflows/firebase-hosting-pull-request.yml`](file:///.github/workflows/firebase-hosting-pull-request.yml): Triggered on Pull Requests (creates live preview channels).
 
 Every time code is pushed to `master` or `main`:
-1. Installs backend and frontend dependencies.
-2. Runs the automated test suite (PCCCS594 TC-S01 to TC-S07).
+1. Installs backend and frontend dependencies using locked packages.
+2. Runs the automated verification test suite (PCCCS594 TC-S01 to TC-S07).
 3. Compiles the Angular production distribution (`npm run build`).
 4. Automatically deploys to Firebase Hosting via `FirebaseExtended/action-hosting-deploy`.
 

@@ -2,6 +2,31 @@
   "application_drafts": {},
   "audit_logs": [
     {
+      "id": "FS-AUD-1794381684571-172",
+      "timestamp": "2026-11-11T07:21:24.571Z",
+      "action": "PAYMENT_SETTLED",
+      "paymentId": "PAY-684547",
+      "transactionId": "TXN-IEM-87325",
+      "amount": 1000,
+      "applicationId": "APP-2026-6911"
+    },
+    {
+      "id": "FS-AUD-1794381684535-755",
+      "timestamp": "2026-11-11T07:21:24.535Z",
+      "action": "APPLICATION_CREATED",
+      "applicationId": "APP-2026-6911",
+      "userId": 12,
+      "courseCode": "BTECH-CSE"
+    },
+    {
+      "id": "FS-AUD-1794381684500-996",
+      "timestamp": "2026-11-11T07:21:24.500Z",
+      "action": "USER_REGISTERED",
+      "userId": 12,
+      "email": "test_1794381684358@iem.edu.in",
+      "role": "APPLICANT"
+    },
+    {
       "id": "FS-AUD-1794379098026-42",
       "timestamp": "2026-11-11T06:38:18.026Z",
       "action": "PAYMENT_SETTLED",
