@@ -4,9 +4,9 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 
-const { initSchema, query } = require('./config/database');
 const { firebaseConfig, isFirebaseLive } = require('./config/firebase');
-const { BUCKET_NAME, SUB_BUCKETS, getBucketStats } = require('./services/storage-bucket.service');
+const { getBucketStats, BUCKET_NAME, SUB_BUCKETS } = require('./services/storage-bucket.service');
+const { getCollectionsStore } = require('./models/firestore-models');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -47,8 +47,8 @@ app.use('/api/firebase', require('./routes/firebase.routes'));
 // System Architecture & Health Endpoint
 app.get('/api/health', async (req, res) => {
   try {
-    const tableCheck = await query("SELECT count(*) as count FROM sqlite_master WHERE type='table'");
     const bucketStats = getBucketStats();
+    const store = getCollectionsStore();
 
     res.json({
       status: 'ONLINE',
@@ -57,15 +57,13 @@ app.get('/api/health', async (req, res) => {
       version: '1.0.0',
       uptime: process.uptime(),
       architecture: {
-        stack: 'Firebase Full-Stack Platform (Angular + Express + Firebase)',
-        sqlDatabase: {
-          engine: 'Firebase Data Connect (Relational SQL PostgreSQL Engine)',
-          dialect: 'SQL (ACID Compliant)',
-          tablesCount: tableCheck[0]?.count || 0
-        },
-        nosqlDatabase: {
-          engine: 'Firebase Cloud Firestore (NoSQL Document Store)',
-          role: 'Draft persistence, document audit trail, async dispatch queue'
+        stack: 'Pure Firebase Platform (Angular + Express + Firebase Cloud Firestore + Storage Bucket)',
+        database: {
+          engine: 'Firebase Cloud Firestore (Pure NoSQL Architecture - No SQL Required)',
+          cloudLocation: 'nam5 (us-central multi-region)',
+          liveDatabase: `projects/${firebaseConfig.projectId}/databases/(default)`,
+          totalCollections: Object.keys(store).length,
+          collections: Object.keys(store)
         },
         storageBucket: {
           provider: 'Firebase Cloud Storage / Cloud Object Storage',
@@ -103,14 +101,12 @@ if (distToServe) {
 
 // Start Server
 async function startServer() {
-  await initSchema();
   app.listen(PORT, () => {
     console.log(`================================================================`);
     console.log(`  IEM ADMISSION PORTAL — BACKEND SERVICE STARTED`);
     console.log(`  Server listening on:  http://localhost:${PORT}`);
     console.log(`  Health & Meta API:    http://localhost:${PORT}/api/health`);
-    console.log(`  Relational SQL DB:    Connected (Firebase Data Connect / SQLite)`);
-    console.log(`  Firebase NoSQL DB:    Active (Firebase Cloud Firestore)`);
+    console.log(`  Database Engine:      Firebase Cloud Firestore (Pure NoSQL)`);
     console.log(`  Storage Bucket:       gs://${BUCKET_NAME}`);
     console.log(`================================================================`);
   });

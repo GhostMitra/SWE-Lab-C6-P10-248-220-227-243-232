@@ -27,22 +27,27 @@
 
 This prototype is built according to the **SRS (Assignment 2)**, **HLD & System Modeling Diagrams (Assignment 3)**, and **Software Test Plan (Assignment 4)**.
 
-It implements a modern **100% Firebase & MEAN hybrid persistence architecture** (No MongoDB — pure Firebase NoSQL & SQL):
+It implements a modern **100% Pure Firebase Cloud Native Architecture** (No SQL required):
 1. **Frontend**:
    - **Angular 22 Single Page Application**: Standalone components, reactive signals, responsive Bootstrap 5 interface, and Firebase Client SDK v10.
 2. **Backend Services & Cloud Functions**:
    - **Express.js API Layer**: Modular routing, Multer upload streaming, JWT verification, and Firebase Admin SDK.
    - **Firebase Cloud Functions**: Serverless runtime exportable via `backend/index.js` (`exports.api`).
-3. **NoSQL Database (Firebase Cloud Firestore)**:
-   - Application draft auto-saving (`application_drafts/{userId}`).
-   - Asynchronous notification queue (`notification_queue`).
-   - Unformatted audit logging (`audit_logs`).
-   - Security rules defined in `firestore.rules`.
-4. **Relational SQL Database (Firebase Data Connect / Cloud SQL / PostgreSQL Schema)**:
-   - Strict relational schema matching the **UML Class Diagram** (`users`, `applicants`, `admission_officers`, `administrators`, `courses`, `applications`, `documents`, `payments`, `notifications`, `audit_trail`).
-   - ACID transaction support, foreign key cascades, composite merit ranking, and eligibility checks.
-   - Defined in `dataconnect/schema/schema.gql`, `dataconnect/connector/queries.gql`, and `backend/database/schema.sql`.
-5. **Cloud Object Storage (Firebase Cloud Storage Bucket)**:
+3. **Database (Firebase Cloud Firestore — Pure NoSQL)**:
+   - **10 Cloud Firestore Collections**:
+     - `users`: User accounts and roles (Applicant, Admission Officer, Administrator).
+     - `applicants`: Personal, demographic, and educational profile records.
+     - `courses`: IEM degree programs (B.Tech CSE, IT, ECE, BCA, MCA) with intake and eligibility rules.
+     - `applications`: Student application submissions with automated composite merit scores (`0.60 * 12th + 0.40 * 10th`).
+     - `documents`: Uploaded document metadata, bucket URIs, and verification status tracking.
+     - `payments`: Application fee payment orders, transaction receipts, and revenue logs.
+     - `notifications`: User alert notifications.
+     - `audit_logs`: Immutable security audit logs.
+     - `application_drafts`: Real-time auto-saving draft documents.
+     - `notification_queue`: Asynchronous dispatch queue.
+   - Live synchronization with Google Cloud Firestore (`projects/iem-admission-404bn/databases/(default)` in `nam5`) and local JSON-backed resilient storage.
+   - Security rules compiled and deployed via `firestore.rules`.
+4. **Cloud Object Storage (Firebase Cloud Storage Bucket)**:
    - Bucket URI: `gs://iem-admission-404bn.appspot.com`
    - Sub-buckets:
      - `/academic-docs`: 10th & 12th Marksheet PDFs.

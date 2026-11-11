@@ -44,7 +44,15 @@ function authorizeRoles(...allowedRoles) {
     if (!req.user) {
       return res.status(401).json({ success: false, message: 'Authentication required.' });
     }
-    if (!allowedRoles.includes(req.user.role)) {
+    const userRole = (req.user.role || '').toUpperCase();
+    const normalizedAllowed = allowedRoles.flatMap(r => {
+      const u = r.toUpperCase();
+      if (u === 'ADMISSION_OFFICER' || u === 'OFFICER') return ['ADMISSION_OFFICER', 'OFFICER'];
+      if (u === 'ADMINISTRATOR' || u === 'ADMIN') return ['ADMINISTRATOR', 'ADMIN'];
+      return [u];
+    });
+
+    if (!normalizedAllowed.includes(userRole)) {
       return res.status(403).json({
         success: false,
         message: `Forbidden: Access restricted to roles: [${allowedRoles.join(', ')}]`

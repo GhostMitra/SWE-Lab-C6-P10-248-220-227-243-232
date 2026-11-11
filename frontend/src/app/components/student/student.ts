@@ -184,7 +184,7 @@ import { ApiService, Application } from '../../services/api.service';
           <!-- Actions Footer -->
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-2 border-top">
             <div class="small text-muted">
-              Database: <span class="badge bg-light text-dark border">PostgreSQL / SQLite ACID Record</span>
+              Database: <span class="badge bg-light text-dark border"><i class="bi bi-fire text-warning me-1"></i>Firebase Cloud Firestore NoSQL</span>
             </div>
             <div class="d-flex gap-2">
               <!-- If fee not paid -->

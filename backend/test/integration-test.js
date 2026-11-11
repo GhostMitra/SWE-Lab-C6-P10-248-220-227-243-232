@@ -71,7 +71,7 @@ async function runTests(port = 5089) {
     console.log(`  Result: Status ${invalidRes.status} (Expected 400), Message: "${invalidRes.data?.message}" -> PASS`);
 
     // TC-S03: Application submission
-    console.log('\n[TEST TC-S03] Valid Application submission into SQL Database...');
+    console.log('\n[TEST TC-S03] Valid Application submission into Firebase Cloud Firestore...');
     const appRes = await request({
       hostname: 'localhost',
       port,

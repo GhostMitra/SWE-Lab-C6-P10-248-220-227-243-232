@@ -1,0 +1,533 @@
+{
+  "users": {
+    "100": {
+      "userId": 100,
+      "fullName": "Dr. Sangeeta Sarkar",
+      "email": "admin@iem.edu.in",
+      "passwordHash": "$2a$10$/vB4wnpY1FgaxnoYTaUvPeWe4DDLQCO38X/Kbn5.uozyLg7Y3NaDi",
+      "phone": "9830000001",
+      "role": "ADMINISTRATOR",
+      "createdAt": "2026-11-11T17:26:10.719Z"
+    },
+    "101": {
+      "userId": 101,
+      "fullName": "Prof. Anirban Mukherjee",
+      "email": "officer@iem.edu.in",
+      "passwordHash": "$2a$10$/vB4wnpY1FgaxnoYTaUvPeHdMhu0asvOZmJLK.pUFZLtyy1gsUfB.",
+      "phone": "9830000002",
+      "role": "OFFICER",
+      "createdAt": "2026-11-11T17:26:10.721Z"
+    },
+    "102": {
+      "userId": 102,
+      "fullName": "Debarghya Mitra",
+      "email": "student@iem.edu.in",
+      "passwordHash": "$2a$10$/vB4wnpY1FgaxnoYTaUvPe1mqis/mS4Gc5Kf31ASq0d4HU5jqhVQG",
+      "phone": "9830000003",
+      "role": "APPLICANT",
+      "createdAt": "2026-11-11T17:26:10.723Z"
+    },
+    "103": {
+      "userId": 103,
+      "fullName": "Test Applicant Jitesh",
+      "email": "test_1794418043329@iem.edu.in",
+      "passwordHash": "$2a$10$bRCtMAstZePkUTf0O11lI.nRzZ4DRYAsMhBpDNDwLpXetmXh5oKRe",
+      "phone": "9876500000",
+      "role": "APPLICANT",
+      "createdAt": "2026-11-11T17:27:23.674Z"
+    },
+    "104": {
+      "userId": 104,
+      "fullName": "Test Applicant Jitesh",
+      "email": "test_1794418296053@iem.edu.in",
+      "passwordHash": "$2a$10$jpPLH3SeZ5UzVdiQ.R4kgeaoVB2/aZjlBhtnCkyWgc36z5Gs5SUVa",
+      "phone": "9876500000",
+      "role": "APPLICANT",
+      "createdAt": "2026-11-11T17:31:36.685Z"
+    },
+    "105": {
+      "userId": 105,
+      "fullName": "Test Applicant Jitesh",
+      "email": "test_1794418391328@iem.edu.in",
+      "passwordHash": "$2a$10$4.mzamQC0PKcW90mCw.aLuDrmpUXV1MInFDvYwD5nwuMFq2ZL4M1y",
+      "phone": "9876500000",
+      "role": "APPLICANT",
+      "createdAt": "2026-11-11T17:33:11.654Z"
+    }
+  },
+  "applicants": {
+    "102": {
+      "applicantId": 102,
+      "userId": 102,
+      "dateOfBirth": "2004-06-15",
+      "gender": "MALE",
+      "address": "Kolkata, West Bengal, India",
+      "updatedAt": "2026-11-11T17:26:10.725Z"
+    },
+    "103": {
+      "applicantId": 103,
+      "userId": 103,
+      "dateOfBirth": "2004-03-21",
+      "gender": "Male",
+      "address": "Kolkata Sector V",
+      "updatedAt": "2026-11-11T17:27:23.847Z",
+      "guardianName": "A. Jana",
+      "tenthPercentage": 89.5,
+      "tenthBoard": "CBSE",
+      "tenthYear": null,
+      "twelfthPercentage": 91,
+      "twelfthBoard": "CBSE",
+      "twelfthYear": null,
+      "twelfthStream": "Science"
+    },
+    "104": {
+      "applicantId": 104,
+      "userId": 104,
+      "dateOfBirth": "2004-03-21",
+      "gender": "Male",
+      "address": "Kolkata Sector V",
+      "updatedAt": "2026-11-11T17:31:37.012Z",
+      "guardianName": "A. Jana",
+      "tenthPercentage": 89.5,
+      "tenthBoard": "CBSE",
+      "tenthYear": null,
+      "twelfthPercentage": 91,
+      "twelfthBoard": "CBSE",
+      "twelfthYear": null,
+      "twelfthStream": "Science"
+    },
+    "105": {
+      "applicantId": 105,
+      "userId": 105,
+      "dateOfBirth": "2004-03-21",
+      "gender": "Male",
+      "address": "Kolkata Sector V",
+      "updatedAt": "2026-11-11T17:33:11.765Z",
+      "guardianName": "A. Jana",
+      "tenthPercentage": 89.5,
+      "tenthBoard": "CBSE",
+      "tenthYear": null,
+      "twelfthPercentage": 91,
+      "twelfthBoard": "CBSE",
+      "twelfthYear": null,
+      "twelfthStream": "Science"
+    }
+  },
+  "courses": {
+    "10": {
+      "courseId": 10,
+      "courseCode": "BTECH-CSE",
+      "courseName": "B.Tech in Computer Science and Engineering",
+      "department": "Computer Science & Engineering",
+      "degreeLevel": "UG",
+      "durationYears": 4,
+      "intakeCapacity": 180,
+      "applicationFee": 1200,
+      "min10thPercent": 60,
+      "min12thPercent": 60,
+      "isActive": true,
+      "createdAt": "2026-11-11T17:26:10.228Z"
+    },
+    "11": {
+      "courseId": 11,
+      "courseCode": "BTECH-IT",
+      "courseName": "B.Tech in Information Technology",
+      "department": "Information Technology",
+      "degreeLevel": "UG",
+      "durationYears": 4,
+      "intakeCapacity": 120,
+      "applicationFee": 1200,
+      "min10thPercent": 60,
+      "min12thPercent": 60,
+      "isActive": true,
+      "createdAt": "2026-11-11T17:26:10.267Z"
+    },
+    "12": {
+      "courseId": 12,
+      "courseCode": "BTECH-ECE",
+      "courseName": "B.Tech in Electronics and Communication Engineering",
+      "department": "Electronics & Communication",
+      "degreeLevel": "UG",
+      "durationYears": 4,
+      "intakeCapacity": 120,
+      "applicationFee": 1200,
+      "min10thPercent": 55,
+      "min12thPercent": 55,
+      "isActive": true,
+      "createdAt": "2026-11-11T17:26:10.305Z"
+    },
+    "13": {
+      "courseId": 13,
+      "courseCode": "BCA",
+      "courseName": "Bachelor of Computer Applications (BCA)",
+      "department": "Computer Applications",
+      "degreeLevel": "UG",
+      "durationYears": 3,
+      "intakeCapacity": 120,
+      "applicationFee": 1000,
+      "min10thPercent": 50,
+      "min12thPercent": 50,
+      "isActive": true,
+      "createdAt": "2026-11-11T17:26:10.307Z"
+    },
+    "14": {
+      "courseId": 14,
+      "courseCode": "MCA",
+      "courseName": "Master of Computer Applications (MCA)",
+      "department": "Computer Applications",
+      "degreeLevel": "PG",
+      "durationYears": 2,
+      "intakeCapacity": 60,
+      "applicationFee": 1200,
+      "min10thPercent": 50,
+      "min12thPercent": 50,
+      "isActive": true,
+      "createdAt": "2026-11-11T17:26:10.312Z"
+    }
+  },
+  "applications": {
+    "APP-2026-7863": {
+      "applicationId": "APP-2026-7863",
+      "applicantId": 102,
+      "courseId": 10,
+      "courseCode": "BTECH-CSE",
+      "courseName": "B.Tech in Computer Science and Engineering",
+      "marks10th": 92.5,
+      "marks12th": 94,
+      "meritScore": 93.4,
+      "category": "GENERAL",
+      "qualifyingExamRank": 1240,
+      "status": "SUBMITTED",
+      "paymentStatus": "PAID",
+      "appliedAt": "2026-11-11T17:26:10.730Z",
+      "updatedAt": "2026-11-11T17:26:10.730Z",
+      "reviewRemarks": "",
+      "reviewedBy": null,
+      "admitLetterUrl": null,
+      "draftSnapshot": {}
+    },
+    "APP-2026-9199": {
+      "applicationId": "APP-2026-9199",
+      "applicantId": null,
+      "courseId": 10,
+      "courseCode": "BTECH-CSE",
+      "courseName": "B.Tech in Computer Science and Engineering",
+      "marks10th": 0,
+      "marks12th": 0,
+      "meritScore": 0,
+      "category": "GENERAL",
+      "qualifyingExamRank": null,
+      "status": "SUBMITTED",
+      "paymentStatus": "PENDING",
+      "appliedAt": "2026-11-11T17:27:23.855Z",
+      "updatedAt": "2026-11-11T17:27:23.855Z",
+      "reviewRemarks": "",
+      "reviewedBy": null,
+      "admitLetterUrl": null,
+      "draftSnapshot": {}
+    },
+    "APP-2026-3813": {
+      "applicationId": "APP-2026-3813",
+      "applicantId": 104,
+      "userId": 104,
+      "courseId": 10,
+      "courseCode": "BTECH-CSE",
+      "courseName": "B.Tech in Computer Science and Engineering",
+      "marks10th": 89.5,
+      "marks12th": 91,
+      "meritScore": 90.4,
+      "category": "GENERAL",
+      "qualifyingExamRank": null,
+      "status": "SUBMITTED",
+      "paymentStatus": "PAID",
+      "appliedAt": "2026-11-11T17:31:37.023Z",
+      "updatedAt": "2026-11-11T17:31:37.023Z",
+      "reviewRemarks": "",
+      "reviewedBy": null,
+      "admitLetterUrl": null,
+      "draftSnapshot": {}
+    },
+    "APP-2026-6477": {
+      "applicationId": "APP-2026-6477",
+      "applicantId": 105,
+      "userId": 105,
+      "courseId": 10,
+      "courseCode": "BTECH-CSE",
+      "courseName": "B.Tech in Computer Science and Engineering",
+      "marks10th": 89.5,
+      "marks12th": 91,
+      "meritScore": 90.4,
+      "category": "GENERAL",
+      "qualifyingExamRank": null,
+      "status": "APPROVED",
+      "paymentStatus": "PAID",
+      "appliedAt": "2026-11-11T17:33:11.774Z",
+      "updatedAt": "2026-11-11T17:33:12.081Z",
+      "reviewRemarks": "All academic criteria met. Approved for Admission.",
+      "reviewedBy": 101,
+      "admitLetterUrl": null,
+      "draftSnapshot": {}
+    }
+  },
+  "documents": {},
+  "payments": {
+    "20": {
+      "paymentId": 20,
+      "applicationId": "APP-2026-7863",
+      "applicantId": 102,
+      "amount": 1200,
+      "currency": "INR",
+      "status": "COMPLETED",
+      "paymentMethod": "ONLINE_UPI",
+      "transactionReference": "TXN-IEM-67150",
+      "invoiceNumber": "INV-2026-5346",
+      "initiatedAt": "2026-11-11T17:26:10.734Z",
+      "completedAt": "2026-11-11T17:26:10.737Z",
+      "gatewayTransactionId": "GATEWAY-TXN-SUCCESS-SEED"
+    },
+    "PAY-297087": {
+      "paymentId": "PAY-297087",
+      "applicationId": "APP-2026-3813",
+      "applicantId": 104,
+      "amount": 1200,
+      "currency": "INR",
+      "status": "SUCCESS",
+      "paymentMethod": "UPI",
+      "gatewayReference": "GW-ORDER-389322",
+      "transactionReference": "TXN-IEM-74816",
+      "invoiceNumber": "INV-2026-8933",
+      "initiatedAt": "2026-11-11T17:31:37.087Z",
+      "completedAt": "2026-11-11T17:31:37.108Z",
+      "transactionId": "TXN-IEM-69351",
+      "gatewayTransactionId": "TXN-IEM-69351"
+    },
+    "PAY-391820": {
+      "paymentId": "PAY-391820",
+      "applicationId": "APP-2026-6477",
+      "applicantId": 105,
+      "amount": 1200,
+      "currency": "INR",
+      "status": "SUCCESS",
+      "paymentMethod": "UPI",
+      "gatewayReference": "GW-ORDER-809720",
+      "transactionReference": "TXN-IEM-63710",
+      "invoiceNumber": "INV-2026-3614",
+      "initiatedAt": "2026-11-11T17:33:11.820Z",
+      "completedAt": "2026-11-11T17:33:11.832Z",
+      "transactionId": "TXN-IEM-66446",
+      "gatewayTransactionId": "TXN-IEM-66446"
+    }
+  },
+  "notifications": {
+    "80": {
+      "notificationId": 80,
+      "userId": 105,
+      "message": "Dear Test Applicant Jitesh, your admission application for B.Tech in Computer Science and Engineering has been received. Please proceed to upload required documents and pay the application fee of Rs 1200.",
+      "type": "SYSTEM",
+      "isRead": false,
+      "createdAt": "2026-11-11T17:33:11.799Z"
+    },
+    "81": {
+      "notificationId": 81,
+      "userId": 105,
+      "message": "Dear Test Applicant Jitesh, payment of Rs 1200 for application APP-2026-6477 was successful (Transaction ID: TXN-IEM-66446). Your application is now queued for evaluation.",
+      "type": "SYSTEM",
+      "isRead": false,
+      "createdAt": "2026-11-11T17:33:11.850Z"
+    },
+    "82": {
+      "notificationId": 82,
+      "userId": 105,
+      "message": "Dear undefined, the status of your application APP-2026-6477 has been updated to \"APPROVED\". Remarks: All academic criteria met. Approved for Admission.",
+      "type": "SYSTEM",
+      "isRead": false,
+      "createdAt": "2026-11-11T17:33:12.125Z"
+    }
+  },
+  "audit_logs": [
+    {
+      "id": "FS-AUD-1794418392123-881",
+      "timestamp": "2026-11-11T17:33:12.123Z",
+      "actorId": 101,
+      "actorEmail": "officer@iem.edu.in",
+      "actorRole": "OFFICER",
+      "action": "UPDATE_APPLICATION_STATUS_APPROVED",
+      "targetEntity": "APPLICATIONS",
+      "targetId": "APP-2026-6477",
+      "details": "Status set to APPROVED. Remarks: All academic criteria met. Approved for Admission."
+    },
+    {
+      "id": "FS-AUD-1794418392075-539",
+      "timestamp": "2026-11-11T17:33:12.075Z",
+      "actorId": 101,
+      "actorEmail": "officer@iem.edu.in",
+      "actorRole": "OFFICER",
+      "action": "USER_LOGIN",
+      "targetEntity": "AUTH",
+      "details": "User logged in via credentials"
+    },
+    {
+      "id": "FS-AUD-1794418391845-558",
+      "timestamp": "2026-11-11T17:33:11.845Z",
+      "action": "PAYMENT_SETTLED",
+      "paymentId": "PAY-391820",
+      "transactionId": "TXN-IEM-66446",
+      "amount": 1200,
+      "applicationId": "APP-2026-6477"
+    },
+    {
+      "id": "FS-AUD-1794418391841-893",
+      "timestamp": "2026-11-11T17:33:11.842Z",
+      "actorId": 105,
+      "actorEmail": "test_1794418391328@iem.edu.in",
+      "actorRole": "APPLICANT",
+      "action": "PAYMENT_SUCCESS",
+      "targetEntity": "PAYMENTS",
+      "targetId": "PAY-391820",
+      "details": "Fee payment of Rs 1200 successful. Txn ID: TXN-IEM-66446"
+    },
+    {
+      "id": "FS-AUD-1794418391792-55",
+      "timestamp": "2026-11-11T17:33:11.792Z",
+      "action": "APPLICATION_CREATED",
+      "applicationId": "APP-2026-6477",
+      "userId": 105,
+      "courseCode": "BTECH-CSE"
+    },
+    {
+      "id": "FS-AUD-1794418391787-383",
+      "timestamp": "2026-11-11T17:33:11.787Z",
+      "actorId": 105,
+      "actorEmail": "test_1794418391328@iem.edu.in",
+      "actorRole": "APPLICANT",
+      "action": "SUBMIT_APPLICATION",
+      "targetEntity": "APPLICATIONS",
+      "targetId": "APP-2026-6477",
+      "details": "Submitted application for B.Tech in Computer Science and Engineering"
+    },
+    {
+      "id": "FS-AUD-1794418391726-257",
+      "timestamp": "2026-11-11T17:33:11.726Z",
+      "action": "USER_REGISTERED",
+      "userId": 105,
+      "email": "test_1794418391328@iem.edu.in",
+      "role": "APPLICANT"
+    },
+    {
+      "id": "FS-AUD-1794418391720-829",
+      "timestamp": "2026-11-11T17:33:11.720Z",
+      "actorId": 105,
+      "actorEmail": "test_1794418391328@iem.edu.in",
+      "actorRole": "APPLICANT",
+      "action": "USER_REGISTERED",
+      "targetEntity": "USERS",
+      "targetId": "105",
+      "details": "New account registered for Test Applicant Jitesh with role APPLICANT"
+    },
+    {
+      "id": "FS-AUD-1794418297129-778",
+      "timestamp": "2026-11-11T17:31:37.129Z",
+      "action": "PAYMENT_SETTLED",
+      "paymentId": "PAY-297087",
+      "transactionId": "TXN-IEM-69351",
+      "amount": 1200,
+      "applicationId": "APP-2026-3813"
+    },
+    {
+      "id": "FS-AUD-1794418297123-812",
+      "timestamp": "2026-11-11T17:31:37.123Z",
+      "actorId": 104,
+      "actorEmail": "test_1794418296053@iem.edu.in",
+      "actorRole": "APPLICANT",
+      "action": "PAYMENT_SUCCESS",
+      "targetEntity": "PAYMENTS",
+      "targetId": "PAY-297087",
+      "details": "Fee payment of Rs 1200 successful. Txn ID: TXN-IEM-69351"
+    },
+    {
+      "id": "FS-AUD-1794418297048-818",
+      "timestamp": "2026-11-11T17:31:37.048Z",
+      "action": "APPLICATION_CREATED",
+      "applicationId": "APP-2026-3813",
+      "userId": 104,
+      "courseCode": "BTECH-CSE"
+    },
+    {
+      "id": "FS-AUD-1794418297042-853",
+      "timestamp": "2026-11-11T17:31:37.042Z",
+      "actorId": 104,
+      "actorEmail": "test_1794418296053@iem.edu.in",
+      "actorRole": "APPLICANT",
+      "action": "SUBMIT_APPLICATION",
+      "targetEntity": "APPLICATIONS",
+      "targetId": "APP-2026-3813",
+      "details": "Submitted application for B.Tech in Computer Science and Engineering"
+    },
+    {
+      "id": "FS-AUD-1794418296899-508",
+      "timestamp": "2026-11-11T17:31:36.899Z",
+      "action": "USER_REGISTERED",
+      "userId": 104,
+      "email": "test_1794418296053@iem.edu.in",
+      "role": "APPLICANT"
+    },
+    {
+      "id": "FS-AUD-1794418296889-148",
+      "timestamp": "2026-11-11T17:31:36.889Z",
+      "actorId": 104,
+      "actorEmail": "test_1794418296053@iem.edu.in",
+      "actorRole": "APPLICANT",
+      "action": "USER_REGISTERED",
+      "targetEntity": "USERS",
+      "targetId": "104",
+      "details": "New account registered for Test Applicant Jitesh with role APPLICANT"
+    },
+    {
+      "id": "FS-AUD-1794418043871-256",
+      "timestamp": "2026-11-11T17:27:23.871Z",
+      "action": "APPLICATION_CREATED",
+      "applicationId": "APP-2026-8975",
+      "userId": 103,
+      "courseCode": "BTECH-CSE"
+    },
+    {
+      "id": "FS-AUD-1794418043867-25",
+      "timestamp": "2026-11-11T17:27:23.867Z",
+      "actorId": 103,
+      "actorEmail": "test_1794418043329@iem.edu.in",
+      "actorRole": "APPLICANT",
+      "action": "SUBMIT_APPLICATION",
+      "targetEntity": "APPLICATIONS",
+      "targetId": "APP-2026-8975",
+      "details": "Submitted application for B.Tech in Computer Science and Engineering"
+    },
+    {
+      "id": "FS-AUD-1794418043781-444",
+      "timestamp": "2026-11-11T17:27:23.781Z",
+      "action": "USER_REGISTERED",
+      "userId": 103,
+      "email": "test_1794418043329@iem.edu.in",
+      "role": "APPLICANT"
+    },
+    {
+      "id": "FS-AUD-1794418043775-715",
+      "timestamp": "2026-11-11T17:27:23.775Z",
+      "actorId": 103,
+      "actorEmail": "test_1794418043329@iem.edu.in",
+      "actorRole": "APPLICANT",
+      "action": "USER_REGISTERED",
+      "targetEntity": "USERS",
+      "targetId": "103",
+      "details": "New account registered for Test Applicant Jitesh with role APPLICANT"
+    },
+    {
+      "id": "FS-AUD-1794417970740-482",
+      "timestamp": "2026-11-11T17:26:10.740Z",
+      "actorEmail": "system@iem.edu.in",
+      "action": "SYSTEM_INITIALIZED",
+      "details": "Pure Firebase Cloud Firestore initialized with seed data"
+    }
+  ],
+  "application_drafts": {},
+  "notification_queue": []
+}

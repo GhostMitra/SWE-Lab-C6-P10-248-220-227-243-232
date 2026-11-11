@@ -115,7 +115,7 @@ import { ApiService, Application } from '../../services/api.service';
         <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
           <div>
             <h5 class="fw-bold text-dark mb-0">Applicant Dossier Evaluation — {{ selectedDossier()?.application?.applicationId }}</h5>
-            <small class="text-muted">Relational Record from SQL DB & Cloud Storage Bucket</small>
+            <small class="text-muted">Document Dossier from Cloud Firestore & Storage Bucket</small>
           </div>
           <button class="btn btn-sm btn-outline-secondary" (click)="selectedDossier.set(null)">
             <i class="bi bi-x-lg"></i> Close

@@ -44,13 +44,13 @@ import { ApiService, Course } from '../../services/api.service';
               </div>
               <ul class="list-unstyled mb-3 small">
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Client:</strong> Angular 22 Single Page App</li>
-                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Backend:</strong> Node.js & Express REST API</li>
-                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Firebase SQL DB:</strong> Firebase Data Connect (Cloud SQL / PostgreSQL)</li>
-                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Firebase NoSQL DB:</strong> Cloud Firestore (Drafts, Logs & Queues)</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Backend:</strong> Firebase Cloud Functions & Express API</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Firebase Database:</strong> Cloud Firestore (Pure NoSQL Architecture)</li>
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Firebase Storage:</strong> Cloud Storage Bucket (Docs & Letters)</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Firebase Auth:</strong> Google & Email/Password Authentication</li>
               </ul>
               <div class="bg-light p-2.5 rounded-3 border text-center small text-muted">
-                <i class="bi bi-shield-lock-fill text-primary me-1"></i> ACID Transactions & PCI-DSS Gateway Emulation
+                <i class="bi bi-shield-lock-fill text-primary me-1"></i> 100% Serverless Cloud Native Architecture (No SQL)
               </div>
             </div>
           </div>
@@ -62,39 +62,30 @@ import { ApiService, Course } from '../../services/api.service';
     <div class="bg-white border-bottom py-3 shadow-sm">
       <div class="container px-4">
         <div class="row g-3 text-center text-md-start align-items-center">
-          <div class="col-md-3 border-end">
-            <div class="d-flex align-items-center gap-2 justify-content-center justify-content-md-start">
-              <i class="bi bi-database-check fs-2 text-primary"></i>
-              <div>
-                <div class="fw-bold text-dark small">SQL Relational DB</div>
-                <div class="text-muted" style="font-size: 0.75rem;">11 Tables & Strict Foreign Keys</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 border-end">
+          <div class="col-md-4 border-end">
             <div class="d-flex align-items-center gap-2 justify-content-center justify-content-md-start">
               <i class="bi bi-fire fs-2 text-warning"></i>
               <div>
-                <div class="fw-bold text-dark small">Firebase Firestore NoSQL</div>
-                <div class="text-muted" style="font-size: 0.75rem;">High-Speed Draft Caching & Logs</div>
+                <div class="fw-bold text-dark small">Firebase Cloud Firestore</div>
+                <div class="text-muted" style="font-size: 0.75rem;">Pure NoSQL Multi-Collection Store</div>
               </div>
             </div>
           </div>
-          <div class="col-md-3 border-end">
+          <div class="col-md-4 border-end">
             <div class="d-flex align-items-center gap-2 justify-content-center justify-content-md-start">
               <i class="bi bi-cloud-arrow-up fs-2 text-info"></i>
               <div>
                 <div class="fw-bold text-dark small">Cloud Storage Bucket</div>
-                <div class="text-muted" style="font-size: 0.75rem;">Academic Docs & Official Admit Letters</div>
+                <div class="text-muted" style="font-size: 0.75rem;">gs://iem-admission-404bn.appspot.com</div>
               </div>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <div class="d-flex align-items-center gap-2 justify-content-center justify-content-md-start">
-              <i class="bi bi-credit-card-2-front fs-2 text-success"></i>
+              <i class="bi bi-shield-check fs-2 text-success"></i>
               <div>
-                <div class="fw-bold text-dark small">Integrated Fee Payment</div>
-                <div class="text-muted" style="font-size: 0.75rem;">Razorpay / UPI / Card Simulation</div>
+                <div class="fw-bold text-dark small">Firebase Security Rules</div>
+                <div class="text-muted" style="font-size: 0.75rem;">Role-Based Firestore & Storage Rules</div>
               </div>
             </div>
           </div>
@@ -155,7 +146,7 @@ import { ApiService, Course } from '../../services/api.service';
       <ng-template #loadingTpl>
         <div class="text-center py-5">
           <div class="spinner-border text-primary" role="status"></div>
-          <div class="text-muted mt-2">Loading programs from Relational SQL Database...</div>
+          <div class="text-muted mt-2">Loading programs from Firebase Cloud Firestore...</div>
         </div>
       </ng-template>
     </div>

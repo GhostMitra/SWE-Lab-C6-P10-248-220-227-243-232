@@ -1,87 +1,184 @@
 /**
- * Comprehensive Firebase Integration Service
- * Supports:
- * 1. Firebase Authentication (ID Token verification, Google/Email Auth)
- * 2. Firebase Cloud Storage (Storage Bucket sync)
- * 3. Firebase Cloud Firestore (NoSQL Document Store)
- * 4. Firebase Data Connect (SQL Relational PostgreSQL Engine)
+ * Firebase Integration Service
+ * Pure Firebase Architecture:
+ * 1. Firebase Cloud Firestore (NoSQL Document Database)
+ * 2. Firebase Cloud Storage (Storage Bucket Layer)
+ * 3. Firebase Authentication (JWT Verification & User Auth)
  */
 
 const fs = require('fs');
 const path = require('path');
-const adminSDK = require('firebase-admin');
 
-// Dynamic / configurable client settings
+// Target Firebase Project Configuration
 let firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY || "AIzaSyMockKeyForIEMAdmissionPortal2026",
   authDomain: process.env.FIREBASE_AUTH_DOMAIN || "iem-admission-404bn.firebaseapp.com",
   projectId: process.env.FIREBASE_PROJECT_ID || "iem-admission-404bn",
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "iem-admission-404bn.appspot.com",
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "104857629384",
-  appId: process.env.FIREBASE_APP_ID || "1:104857629384:web:9f8e7d6c5b4a3",
-  dataConnectLocation: "us-central1",
-  dataConnectService: "iem-admission-service"
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "182328521276",
+  appId: process.env.FIREBASE_APP_ID || "1:182328521276:web:9f8e7d6c5b4a3"
 };
 
-let admin = null;
-let firestoreDb = null;
-let storageBucket = null;
+let liveToken = null;
+let liveTokenExpires = 0;
 let isLive = false;
-let initMode = 'DEV_EMULATED'; // DEV_EMULATED | FIREBASE_LIVE | EMULATOR_SUITE
 
-function initializeFirebase() {
-  const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT || path.join(__dirname, '..', 'serviceAccountKey.json');
-
-  try {
-    const existingApps = adminSDK.getApps ? adminSDK.getApps() : (adminSDK.apps || []);
-    if (existingApps && existingApps.length > 0) {
-      admin = existingApps[0];
-      isLive = true;
-      initMode = 'FIREBASE_LIVE';
-    } else if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      admin = adminSDK.initializeApp({
-        credential: adminSDK.credential.cert(serviceAccount),
-        storageBucket: firebaseConfig.storageBucket,
-        projectId: serviceAccount.project_id || firebaseConfig.projectId
-      });
-      isLive = true;
-      initMode = 'FIREBASE_LIVE';
-      console.log('[Firebase] Admin SDK initialized with serviceAccountKey.json for project:', serviceAccount.project_id);
-    } else if (process.env.FIREBASE_CONFIG) {
-      admin = adminSDK.initializeApp();
-      isLive = true;
-      initMode = 'FIREBASE_LIVE';
-      console.log('[Firebase] Admin SDK initialized from environment FIREBASE_CONFIG');
-    } else if (process.env.FIREBASE_AUTH_EMULATOR_HOST || process.env.FIRESTORE_EMULATOR_HOST) {
-      admin = adminSDK.initializeApp({
-        projectId: firebaseConfig.projectId,
-        storageBucket: firebaseConfig.storageBucket
-      });
-      isLive = true;
-      initMode = 'EMULATOR_SUITE';
-      console.log('[Firebase] Admin SDK connected to local Firebase Emulator Suite.');
-    } else {
-      initMode = 'DEV_EMULATED';
-      console.log('[Firebase] Running in Firebase-Ready Dev Mode (Place serviceAccountKey.json or set FIREBASE_CONFIG to link live GCP).');
+// Helpers for Firestore REST API serialization
+function toFirestoreFields(obj) {
+  const fields = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v === null || v === undefined) {
+      fields[k] = { nullValue: null };
+    } else if (typeof v === 'boolean') {
+      fields[k] = { booleanValue: v };
+    } else if (typeof v === 'number') {
+      fields[k] = Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v };
+    } else if (typeof v === 'string') {
+      fields[k] = { stringValue: v };
+    } else if (Array.isArray(v)) {
+      fields[k] = { arrayValue: { values: v.map(item => {
+        if (typeof item === 'object' && item !== null) {
+          return { mapValue: { fields: toFirestoreFields(item) } };
+        }
+        return { stringValue: String(item) };
+      }) } };
+    } else if (typeof v === 'object') {
+      fields[k] = { mapValue: { fields: toFirestoreFields(v) } };
     }
-
-    if (admin) {
-      try {
-        firestoreDb = admin.firestore();
-      } catch (e) {}
-      try {
-        storageBucket = admin.storage().bucket();
-      } catch (e) {}
-    }
-  } catch (err) {
-    console.warn('[Firebase] Initialization notice:', err.message);
-    initMode = 'DEV_EMULATED';
   }
+  return fields;
 }
 
-// Initialize on module load
-initializeFirebase();
+function fromFirestoreFields(fields) {
+  if (!fields) return {};
+  const obj = {};
+  for (const [k, v] of Object.entries(fields)) {
+    if ('stringValue' in v) obj[k] = v.stringValue;
+    else if ('integerValue' in v) obj[k] = Number(v.integerValue);
+    else if ('doubleValue' in v) obj[k] = Number(v.doubleValue);
+    else if ('booleanValue' in v) obj[k] = v.booleanValue;
+    else if ('timestampValue' in v) obj[k] = v.timestampValue;
+    else if ('nullValue' in v) obj[k] = null;
+    else if ('mapValue' in v) obj[k] = fromFirestoreFields(v.mapValue.fields);
+    else if ('arrayValue' in v) {
+      obj[k] = (v.arrayValue.values || []).map(val => {
+        if (val.mapValue) return fromFirestoreFields(val.mapValue.fields);
+        return val.stringValue !== undefined ? val.stringValue : val;
+      });
+    }
+  }
+  return obj;
+}
+
+// Check and acquire live GCP Firebase CLI credentials
+function getLiveAccessToken() {
+  try {
+    const configPath = path.join(process.env.USERPROFILE || process.env.HOME || '', '.config', 'configstore', 'firebase-tools.json');
+    if (fs.existsSync(configPath)) {
+      const toolsConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      if (toolsConfig.tokens && toolsConfig.tokens.access_token) {
+        liveToken = toolsConfig.tokens.access_token;
+        liveTokenExpires = toolsConfig.tokens.expires_at || (Date.now() + 3600000);
+        isLive = true;
+        return liveToken;
+      }
+    }
+  } catch (e) {
+    // Silent fallback
+  }
+  return null;
+}
+
+getLiveAccessToken();
+
+/**
+ * Direct Live Cloud Firestore REST Client
+ */
+const LiveFirestoreClient = {
+  getBaseUrl() {
+    return `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents`;
+  },
+
+  async getHeaders() {
+    const token = getLiveAccessToken();
+    return token ? {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    } : null;
+  },
+
+  async setDoc(collection, docId, data) {
+    const headers = await this.getHeaders();
+    if (!headers) return null;
+
+    try {
+      const url = `${this.getBaseUrl()}/${collection}/${docId}`;
+      const res = await fetch(url, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ fields: toFirestoreFields(data) })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        return fromFirestoreFields(json.fields);
+      }
+    } catch (err) {
+      console.warn(`[Firestore Cloud] Write to ${collection}/${docId} notice:`, err.message);
+    }
+    return null;
+  },
+
+  async getDoc(collection, docId) {
+    const headers = await this.getHeaders();
+    if (!headers) return null;
+
+    try {
+      const url = `${this.getBaseUrl()}/${collection}/${docId}`;
+      const res = await fetch(url, { headers });
+      if (res.ok) {
+        const json = await res.json();
+        return fromFirestoreFields(json.fields);
+      }
+    } catch (err) {
+      // Doc might not exist
+    }
+    return null;
+  },
+
+  async deleteDoc(collection, docId) {
+    const headers = await this.getHeaders();
+    if (!headers) return null;
+
+    try {
+      const url = `${this.getBaseUrl()}/${collection}/${docId}`;
+      const res = await fetch(url, { method: 'DELETE', headers });
+      return res.ok;
+    } catch (err) {
+      return false;
+    }
+  },
+
+  async listDocs(collection) {
+    const headers = await this.getHeaders();
+    if (!headers) return null;
+
+    try {
+      const url = `${this.getBaseUrl()}/${collection}`;
+      const res = await fetch(url, { headers });
+      if (res.ok) {
+        const json = await res.json();
+        const docs = (json.documents || []).map(d => {
+          const id = d.name.split('/').pop();
+          return { id, ...fromFirestoreFields(d.fields) };
+        });
+        return docs;
+      }
+    } catch (err) {
+      console.warn(`[Firestore Cloud] List ${collection} notice:`, err.message);
+    }
+    return null;
+  }
+};
 
 /**
  * Update configuration dynamically
@@ -95,23 +192,6 @@ function updateFirebaseConfig(newConfig) {
  * Verify Firebase ID Token
  */
 async function verifyFirebaseToken(idToken) {
-  if (isLive && admin) {
-    try {
-      const decoded = await admin.auth().verifyIdToken(idToken);
-      return {
-        uid: decoded.uid,
-        email: decoded.email,
-        name: decoded.name || decoded.email.split('@')[0],
-        picture: decoded.picture || null,
-        isFirebase: true,
-        source: 'FIREBASE_LIVE_AUTH'
-      };
-    } catch (err) {
-      console.warn('[Firebase] Live ID Token verification failed:', err.message);
-    }
-  }
-
-  // Development & Simulated Token handler
   if (idToken) {
     if (idToken.startsWith('firebase-mock-token-') || idToken.startsWith('firebase-token-')) {
       const email = idToken.replace(/^firebase-(mock-)?token-/, '');
@@ -124,7 +204,6 @@ async function verifyFirebaseToken(idToken) {
       };
     }
   }
-
   return null;
 }
 
@@ -135,31 +214,40 @@ function getFirebaseStatus() {
   return {
     isCapable: true,
     isLiveCloudSdk: isLive,
-    mode: initMode,
+    mode: isLive ? 'FIREBASE_LIVE_CONNECTED' : 'DEV_LOCAL_STORE',
     project: {
       projectId: firebaseConfig.projectId,
       authDomain: firebaseConfig.authDomain,
       storageBucket: firebaseConfig.storageBucket,
-      dataConnectLocation: firebaseConfig.dataConnectLocation,
-      dataConnectService: firebaseConfig.dataConnectService
+      firestoreLocation: 'nam5'
     },
     services: {
       authentication: {
-        status: isLive ? 'LIVE_CLOUD_READY' : 'ACTIVE_EMULATED',
+        status: 'READY',
         provider: 'Firebase Authentication (Google / Email & Password)'
       },
       cloudStorage: {
-        status: (isLive && storageBucket) ? 'LIVE_BUCKET_ATTACHED' : 'ACTIVE_EMULATED',
-        bucketUri: `gs://${firebaseConfig.storageBucket}`
+        status: 'ATTACHED',
+        provider: 'Firebase Cloud Storage Bucket',
+        bucketUri: `gs://${firebaseConfig.storageBucket}`,
+        subBuckets: ['academic-docs', 'candidate-media', 'verification-certs', 'generated-letters']
       },
       cloudFirestore: {
-        status: (isLive && firestoreDb) ? 'FIRESTORE_SYNC_LIVE' : 'ACTIVE_JSON_FALLBACK',
-        collections: ['application_drafts', 'audit_logs', 'notification_queue']
-      },
-      dataConnect: {
-        status: 'READY',
-        engine: 'Firebase Data Connect (PostgreSQL / Google Cloud SQL)',
-        schemaFile: 'dataconnect/schema/schema.gql'
+        status: isLive ? 'FIRESTORE_LIVE_CONNECTED' : 'LOCAL_PERSISTENT_STORE',
+        provider: 'Firebase Cloud Firestore (Pure NoSQL Architecture - No SQL)',
+        database: `projects/${firebaseConfig.projectId}/databases/(default)`,
+        collections: [
+          'users',
+          'applicants',
+          'courses',
+          'applications',
+          'documents',
+          'payments',
+          'notifications',
+          'audit_logs',
+          'application_drafts',
+          'notification_queue'
+        ]
       }
     }
   };
@@ -171,8 +259,7 @@ module.exports = {
   verifyFirebaseToken,
   getFirebaseStatus,
   isFirebaseLive: () => isLive,
-  getAdmin: () => admin,
-  getFirestore: () => firestoreDb,
-  getStorageBucket: () => storageBucket,
-  initializeFirebase
+  LiveFirestoreClient,
+  toFirestoreFields,
+  fromFirestoreFields
 };

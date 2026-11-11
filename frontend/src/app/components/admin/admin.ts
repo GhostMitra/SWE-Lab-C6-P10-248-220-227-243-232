@@ -75,12 +75,12 @@ import { ApiService } from '../../services/api.service';
           <div class="card card-custom p-3 border-0 bg-white">
             <div class="d-flex justify-content-between align-items-start">
               <div>
-                <span class="text-muted small fw-bold text-uppercase">SQL & NoSQL Pipeline</span>
-                <h3 class="fw-bold text-warning mt-1 mb-0">11 Tables</h3>
+                <span class="text-muted small fw-bold text-uppercase">Firestore Database</span>
+                <h3 class="fw-bold text-warning mt-1 mb-0">10 Collections</h3>
               </div>
-              <div class="bg-warning text-dark p-2.5 rounded-3"><i class="bi bi-diagram-3-fill fs-4"></i></div>
+              <div class="bg-warning text-dark p-2.5 rounded-3"><i class="bi bi-fire fs-4"></i></div>
             </div>
-            <small class="text-muted mt-2 d-block">ACID Relational + Mongo Drafts</small>
+            <small class="text-muted mt-2 d-block">Pure NoSQL Cloud Database</small>
           </div>
         </div>
       </div>
@@ -99,12 +99,12 @@ import { ApiService } from '../../services/api.service';
         </li>
         <li class="nav-item">
           <button class="nav-link py-2 fw-semibold" [class.active]="activeTab() === 'USERS'" (click)="activeTab.set('USERS')">
-            <i class="bi bi-people me-1"></i> User Management (SQL)
+            <i class="bi bi-people me-1"></i> User Management (Firestore)
           </button>
         </li>
         <li class="nav-item">
           <button class="nav-link py-2 fw-semibold" [class.active]="activeTab() === 'NOSQL'" (click)="activeTab.set('NOSQL')">
-            <i class="bi bi-fire me-1"></i> Firebase Firestore (NoSQL)
+            <i class="bi bi-fire me-1"></i> Cloud Firestore Collections
           </button>
         </li>
         <li class="nav-item">
@@ -219,7 +219,7 @@ import { ApiService } from '../../services/api.service';
       <!-- TAB 3: USER MANAGEMENT -->
       <div *ngIf="activeTab() === 'USERS'">
         <div class="card card-custom border-0 p-4">
-          <h5 class="fw-bold text-dark mb-3">Relational SQL Users Table (ACID Compliant)</h5>
+          <h5 class="fw-bold text-dark mb-3">Firestore Users Collection (NoSQL Documents)</h5>
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
               <thead class="table-light small">
@@ -296,7 +296,7 @@ import { ApiService } from '../../services/api.service';
       <!-- TAB 5: AUDIT TRAIL -->
       <div *ngIf="activeTab() === 'AUDIT'">
         <div class="card card-custom border-0 p-4">
-          <h5 class="fw-bold text-dark mb-3">Relational SQL Audit Trail Ledger</h5>
+          <h5 class="fw-bold text-dark mb-3">Firebase Cloud Firestore Audit Trail</h5>
           <div class="table-responsive">
             <table class="table table-sm table-hover align-middle mb-0">
               <thead class="table-light small">
@@ -380,7 +380,7 @@ export class AdminComponent implements OnInit {
 
     this.api.getAuditTrail().subscribe({
       next: (res) => {
-        if (res.success) this.auditTrail.set(res.sqlAuditTrail);
+        if (res.success) this.auditTrail.set(res.firestoreAuditLogs || res.sqlAuditTrail || []);
       }
     });
 

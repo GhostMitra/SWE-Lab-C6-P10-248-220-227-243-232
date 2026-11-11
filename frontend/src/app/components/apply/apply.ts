@@ -15,7 +15,7 @@ import { FirebaseService } from '../../services/firebase.service';
         <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-3 mb-4 gap-2">
           <div>
             <h3 class="fw-bold text-dark mb-0">Admission Application Portal</h3>
-            <small class="text-muted">Fill Academic Data (SQL/NoSQL Draft) -> Upload Documents (Storage Bucket) -> Fee Payment</small>
+            <small class="text-muted">Fill Academic Data (Firestore NoSQL Draft) -> Upload Documents (Storage Bucket) -> Fee Payment</small>
           </div>
           <div>
             <span class="badge bg-primary text-uppercase px-3 py-1.5 fw-bold">Step {{ currentStep() }} of 3</span>
@@ -142,7 +142,7 @@ import { FirebaseService } from '../../services/firebase.service';
             <i class="bi bi-cloud-arrow-up-fill fs-4"></i>
             <div>
               <strong>Cloud Object Storage:</strong> Documents are streamed directly into our dedicated 
-              <code>gs://iem-admission-portal.appspot.com</code> bucket and indexed into the SQL database.
+              <code>gs://iem-admission-404bn.appspot.com</code> bucket and indexed into Firebase Cloud Firestore.
             </div>
           </div>
 
@@ -443,7 +443,7 @@ export class ApplyComponent implements OnInit {
         if (u) {
           this.fb.syncDraftToFirestore(u.userId, this.form);
         }
-        this.successMessage.set('Draft cached in MongoDB NoSQL store & Firebase Cloud Firestore.');
+        this.successMessage.set('Draft cached in Firebase Cloud Firestore NoSQL store.');
         setTimeout(() => this.successMessage.set(null), 2500);
       },
       error: (err) => this.errorMessage.set(err.error?.message || 'Failed to save draft.')
@@ -458,7 +458,7 @@ export class ApplyComponent implements OnInit {
       next: (res) => {
         this.loading.set(false);
         this.activeAppId.set(res.applicationId);
-        this.successMessage.set(`Application ${res.applicationId} registered in SQL DB. Please upload documents.`);
+        this.successMessage.set(`Application ${res.applicationId} registered in Firebase Cloud Firestore. Please upload documents.`);
         this.currentStep.set(2);
       },
       error: (err) => {

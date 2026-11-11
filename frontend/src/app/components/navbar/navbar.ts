@@ -132,7 +132,7 @@ import { FirebaseService } from '../../services/firebase.service';
             <div class="alert alert-success d-flex align-items-center gap-2 py-2 mb-3 small">
               <i class="bi bi-check-circle-fill fs-5"></i>
               <div>
-                <strong>Firebase Integration Enabled:</strong> System is fully configured with Firebase Authentication, Cloud Storage Buckets, Cloud Firestore (NoSQL), and Firebase Data Connect (SQL).
+                <strong>Firebase Integration Enabled:</strong> Pure Firebase Architecture with Firebase Authentication, Cloud Storage Buckets, and Cloud Firestore (Pure NoSQL Database - No SQL required).
               </div>
             </div>
 
@@ -152,9 +152,9 @@ import { FirebaseService } from '../../services/firebase.service';
                 <div class="p-3 border rounded-3 bg-light h-100">
                   <div class="d-flex align-items-center justify-content-between mb-1">
                     <span class="fw-bold small text-dark"><i class="bi bi-cloud-arrow-up-fill text-info me-1"></i> Firebase Storage Bucket</span>
-                    <span class="badge bg-info text-dark">READY</span>
+                    <span class="badge bg-info text-dark">ATTACHED</span>
                   </div>
-                  <div class="text-muted small font-monospace" style="font-size: 0.72rem;">gs://iem-admission-portal.appspot.com</div>
+                  <div class="text-muted small font-monospace" style="font-size: 0.72rem;">gs://{{ fb.config.storageBucket }}</div>
                   <div class="text-muted small">Sub-buckets: academic-docs, candidate-media, generated-letters.</div>
                 </div>
               </div>
@@ -163,19 +163,19 @@ import { FirebaseService } from '../../services/firebase.service';
                 <div class="p-3 border rounded-3 bg-light h-100">
                   <div class="d-flex align-items-center justify-content-between mb-1">
                     <span class="fw-bold small text-dark"><i class="bi bi-database-fill text-warning me-1"></i> Firebase Cloud Firestore</span>
-                    <span class="badge bg-warning text-dark">SYNC READY</span>
+                    <span class="badge bg-success">CONNECTED</span>
                   </div>
-                  <div class="text-muted small">NoSQL document store sync for drafts, audit trail, and notification queue.</div>
+                  <div class="text-muted small">Pure NoSQL database: users, applications, courses, payments, documents, and audit logs.</div>
                 </div>
               </div>
 
               <div class="col-md-6">
                 <div class="p-3 border rounded-3 bg-light h-100">
                   <div class="d-flex align-items-center justify-content-between mb-1">
-                    <span class="fw-bold small text-dark"><i class="bi bi-diagram-3-fill text-success me-1"></i> Firebase Data Connect</span>
-                    <span class="badge bg-success">CONFIGURED</span>
+                    <span class="fw-bold small text-dark"><i class="bi bi-shield-check text-success me-1"></i> Firestore Security Rules</span>
+                    <span class="badge bg-success">DEPLOYED</span>
                   </div>
-                  <div class="text-muted small">Relational SQL engine on Cloud SQL PostgreSQL with GraphQL schema.</div>
+                  <div class="text-muted small">Live security rules & composite indexes deployed to Cloud Firestore (nam5).</div>
                 </div>
               </div>
             </div>
@@ -185,9 +185,9 @@ import { FirebaseService } from '../../services/firebase.service';
             <div class="bg-dark text-white p-3 rounded-3 small font-monospace mb-3" style="font-size: 0.78rem;">
               <div><strong>Project ID:</strong> {{ fb.config.projectId }}</div>
               <div><strong>Auth Domain:</strong> {{ fb.config.authDomain }}</div>
-              <div><strong>Storage Bucket:</strong> {{ fb.config.storageBucket }}</div>
-              <div><strong>Data Connect:</strong> {{ fb.config.projectId }}-service (PostgreSQL instance)</div>
-              <div><strong>SDK Status:</strong> Client Web SDK v10 & Admin SDK v12 Loaded</div>
+              <div><strong>Storage Bucket:</strong> gs://{{ fb.config.storageBucket }}</div>
+              <div><strong>Firestore Database:</strong> projects/{{ fb.config.projectId }}/databases/(default)</div>
+              <div><strong>Architecture:</strong> Pure Firebase NoSQL Serverless (No SQL)</div>
             </div>
           </div>
           <div class="modal-footer py-2">
