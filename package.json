@@ -15,5 +15,8 @@
     "firebase:deploy:frontend": "firebase deploy --only hosting"
   },
   "author": "Debarghya Mitra (PM), Arka Ghosh Dastider (UI/UX), Diptomoy Das (Full-Stack), Jitesh Jana (QA), Jatin Kumar (Architect)",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "pptxgenjs": "^4.0.1"
+  }
 }

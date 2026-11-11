@@ -60,7 +60,9 @@ export interface Application {
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:5000/api';
+  private readonly baseUrl = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '4200')
+    ? 'http://localhost:5000/api'
+    : '/api';
 
   // Signals for reactive state
   currentUser = signal<User | null>(null);
