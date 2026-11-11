@@ -1,25 +1,52 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Academic documents bucket
-    match /academic-docs/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
+    
+    // =========================================================================
+    // Role-Based Access Control (RBAC) Helper Functions
+    // =========================================================================
+    function isAuthenticated() {
+      return request.auth != null;
     }
-    // Candidate media bucket
+    
+    function isAdmin() {
+      return isAuthenticated() && (request.auth.token.role == 'ADMINISTRATOR' || request.auth.token.role == 'ADMIN');
+    }
+    
+    function isOfficer() {
+      return isAuthenticated() && (isAdmin() || request.auth.token.role == 'ADMISSION_OFFICER' || request.auth.token.role == 'OFFICER');
+    }
+
+    // 1. Academic documents bucket (Mark sheets, 10th/12th certificates)
+    // Only the authenticated applicant or review officer/admin can access
+    match /academic-docs/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isOfficer());
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+    match /academic-docs/{allPaths=**} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // 2. Candidate media bucket (Applicant photos, profile pictures, identity proofs)
+    match /candidate-media/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isOfficer());
+    }
     match /candidate-media/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAuthenticated();
     }
-    // Verification certificates bucket
+
+    // 3. Verification certificates bucket (Officer stamped, verified documents)
     match /verification-certs/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      allow read: if isAuthenticated();
+      allow write: if isOfficer();
     }
-    // Generated official admission letters
+
+    // 4. Generated official admission letters (Merit-based admission offer letters)
     match /generated-letters/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isOfficer();
     }
   }
 }
