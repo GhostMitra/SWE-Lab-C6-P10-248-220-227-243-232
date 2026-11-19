@@ -270,10 +270,10 @@ import { ApiService, Course } from '../../services/api.service';
             <!-- Card Header -->
             <div class="card-header bg-white border-0 pt-4 px-4 pb-2 d-flex justify-content-between align-items-start">
               <span class="badge bg-primary text-white fw-bold px-2.5 py-1 rounded-pill" style="font-size: 0.74rem;">
-                {{ course.degree }} • {{ course.durationYears }} Years
+                {{ course.degree || (course.courseCode.startsWith('BTECH') ? 'B.Tech' : course.courseCode) }} • {{ course.durationYears }} Years
               </span>
               <span class="badge bg-success bg-opacity-10 text-success fw-bold px-2.5 py-1 rounded-pill" style="font-size: 0.74rem;">
-                <i class="bi bi-people-fill me-1"></i>{{ course.seats }} Total Seats
+                <i class="bi bi-people-fill me-1"></i>{{ course.seats || 120 }} Total Seats
               </span>
             </div>
 
@@ -287,27 +287,27 @@ import { ApiService, Course } from '../../services/api.service';
                 <div class="small fw-bold text-secondary mb-1">
                   <i class="bi bi-patch-check-fill text-primary me-1"></i> Minimum Board Criteria:
                 </div>
-                <div class="small text-dark" style="line-height: 1.45;">{{ course.eligibilityCriteria }}</div>
+                <div class="small text-dark fw-medium" style="line-height: 1.45;">{{ course.eligibilityCriteria }}</div>
               </div>
 
               <!-- Percentages Grid -->
               <div class="row g-2 mb-3">
                 <div class="col-6">
-                  <div class="p-2 border rounded-2 text-center bg-white">
-                    <div class="text-muted small" style="font-size: 0.72rem;">Min. 10th Aggregate</div>
-                    <strong class="text-dark fs-6">{{ course.minTenthPercentage }}%</strong>
+                  <div class="p-2 border rounded-2 text-center bg-white shadow-2xs">
+                    <div class="text-muted small fw-semibold" style="font-size: 0.72rem;">Min. 10th Aggregate</div>
+                    <strong class="text-primary fs-6 fw-bold">{{ course.minTenthPercentage }}%</strong>
                   </div>
                 </div>
                 <div class="col-6">
-                  <div class="p-2 border rounded-2 text-center bg-white">
-                    <div class="text-muted small" style="font-size: 0.72rem;">Min. 12th Aggregate</div>
-                    <strong class="text-dark fs-6">{{ course.minTwelfthPercentage }}%</strong>
+                  <div class="p-2 border rounded-2 text-center bg-white shadow-2xs">
+                    <div class="text-muted small fw-semibold" style="font-size: 0.72rem;">Min. 12th Aggregate</div>
+                    <strong class="text-primary fs-6 fw-bold">{{ course.minTwelfthPercentage }}%</strong>
                   </div>
                 </div>
               </div>
 
               <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                <span class="small text-muted">Application Fee:</span>
+                <span class="small text-muted fw-semibold">Application Fee:</span>
                 <span class="fw-extrabold text-success fs-5">₹ {{ course.applicationFee }}</span>
               </div>
             </div>
@@ -540,10 +540,10 @@ export class HomeComponent implements OnInit {
     const list = this.courses();
     const cat = this.selectedCategory();
     if (cat === 'BTECH') {
-      return list.filter(c => c.degree === 'B.Tech');
+      return list.filter(c => c.degree === 'B.Tech' || c.degree?.includes('B.Tech') || c.courseCode?.startsWith('BTECH'));
     }
     if (cat === 'COMPUTING') {
-      return list.filter(c => c.degree === 'BCA' || c.degree === 'MCA');
+      return list.filter(c => c.degree === 'BCA' || c.degree === 'MCA' || c.courseCode === 'BCA' || c.courseCode === 'MCA');
     }
     return list;
   });

@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, map, catchError, throwError } from 'rxjs';
 
 export interface User {
   userId: number;
@@ -198,8 +198,53 @@ export class ApiService {
   }
 
   // --- Courses ---
+  normalizeCourse(c: any): Course {
+    if (!c) return c;
+    const code = c.courseCode || '';
+    const degree = c.degree || (code.startsWith('BTECH') ? 'B.Tech' : (code === 'BCA' ? 'BCA' : (code === 'MCA' ? 'MCA' : 'Degree')));
+    const seats = c.seats || c.intakeCapacity || 120;
+    const min10 = c.minTenthPercentage !== undefined ? c.minTenthPercentage : (c.min10thPercent !== undefined ? c.min10thPercent : 60);
+    const min12 = c.minTwelfthPercentage !== undefined ? c.minTwelfthPercentage : (c.min12thPercent !== undefined ? c.min12thPercent : 60);
+    
+    let eligibility = c.eligibilityCriteria;
+    if (!eligibility) {
+      if (code.startsWith('BTECH-CSE')) {
+        eligibility = '10+2 Higher Secondary with Physics, Mathematics & Chemistry/CompSc with minimum 60% aggregate and valid WBJEE / JEE Main rank.';
+      } else if (code.startsWith('BTECH-IT')) {
+        eligibility = '10+2 Higher Secondary with Physics, Mathematics & Chemistry with minimum 60% aggregate and valid WBJEE / JEE Main score.';
+      } else if (code.startsWith('BTECH-ECE') || code.startsWith('BTECH')) {
+        eligibility = '10+2 Higher Secondary with Physics and Mathematics with minimum 55% aggregate marks.';
+      } else if (code === 'BCA') {
+        eligibility = '10+2 Higher Secondary in any stream with Mathematics / Computer Application / Statistics with at least 50% aggregate marks.';
+      } else if (code === 'MCA') {
+        eligibility = 'BCA / B.Sc in CS or IT with minimum 55% aggregate and valid JECA / IEMJEE score.';
+      } else {
+        eligibility = `Passed 10+2 with minimum ${min12}% aggregate marks from a recognized board.`;
+      }
+    }
+
+    return {
+      courseId: c.courseId,
+      courseCode: code,
+      courseName: c.courseName,
+      degree,
+      durationYears: c.durationYears || 4,
+      eligibilityCriteria: eligibility,
+      minTenthPercentage: min10,
+      minTwelfthPercentage: min12,
+      seats,
+      applicationFee: c.applicationFee || 1000,
+      isOpen: c.isOpen !== undefined ? c.isOpen : 1
+    };
+  }
+
   getCourses(): Observable<{ success: boolean; courses: Course[] }> {
-    return this.http.get<{ success: boolean; courses: Course[] }>(`${this.baseUrl}/courses`);
+    return this.http.get<{ success: boolean; courses: any[] }>(`${this.baseUrl}/courses`).pipe(
+      map(res => ({
+        ...res,
+        courses: (res.courses || []).map(c => this.normalizeCourse(c))
+      }))
+    );
   }
 
   createCourse(course: Partial<Course>): Observable<any> {

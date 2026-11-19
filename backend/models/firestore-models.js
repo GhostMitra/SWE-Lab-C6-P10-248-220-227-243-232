@@ -156,23 +156,66 @@ Object.values(collections.courses).forEach(c => {
   if (c.courseId >= nextCourseId) nextCourseId = c.courseId + 1;
 });
 
+function normalizeCourseDoc(c) {
+  if (!c) return null;
+  const code = c.courseCode || '';
+  const degree = c.degree || (code.startsWith('BTECH') ? 'B.Tech' : (code === 'BCA' ? 'BCA' : (code === 'MCA' ? 'MCA' : 'Degree')));
+  const seats = c.seats || c.intakeCapacity || 120;
+  const min10 = c.minTenthPercentage !== undefined ? c.minTenthPercentage : (c.min10thPercent !== undefined ? c.min10thPercent : 60);
+  const min12 = c.minTwelfthPercentage !== undefined ? c.minTwelfthPercentage : (c.min12thPercent !== undefined ? c.min12thPercent : 60);
+  let eligibility = c.eligibilityCriteria;
+  if (!eligibility) {
+    if (code.startsWith('BTECH-CSE')) {
+      eligibility = '10+2 with Physics, Mathematics & Chemistry/CompSc with minimum 60% aggregate and valid WBJEE / JEE Main rank.';
+    } else if (code.startsWith('BTECH-IT')) {
+      eligibility = '10+2 with Physics, Mathematics & Chemistry with minimum 60% aggregate and valid WBJEE / JEE Main score.';
+    } else if (code.startsWith('BTECH-ECE') || code.startsWith('BTECH')) {
+      eligibility = '10+2 with Physics and Mathematics with minimum 55% aggregate marks.';
+    } else if (code === 'BCA') {
+      eligibility = '10+2 in any stream with Mathematics / Computer Application / Statistics with at least 50% marks.';
+    } else if (code === 'MCA') {
+      eligibility = 'BCA / B.Sc in CS or IT with minimum 55% aggregate and valid JECA / IEMJEE score.';
+    } else {
+      eligibility = `Passed 10+2 with minimum ${min12}% aggregate marks from a recognized board.`;
+    }
+  }
+  return {
+    ...c,
+    degree,
+    seats,
+    intakeCapacity: seats,
+    minTenthPercentage: min10,
+    minTwelfthPercentage: min12,
+    min10thPercent: min10,
+    min12thPercent: min12,
+    eligibilityCriteria: eligibility,
+    isOpen: c.isOpen !== undefined ? c.isOpen : 1
+  };
+}
+
 const CourseModel = {
-  async create({ courseCode, courseName, department, degreeLevel = 'UG', durationYears = 4, intakeCapacity = 120, applicationFee = 1200.00, min10thPercent = 60.00, min12thPercent = 60.00 }) {
+  async create({ courseCode, courseName, department, degree, degreeLevel = 'UG', durationYears = 4, intakeCapacity = 120, seats, applicationFee = 1200.00, min10thPercent = 60.00, min12thPercent = 60.00, minTenthPercentage, minTwelfthPercentage, eligibilityCriteria }) {
     const courseId = nextCourseId++;
-    const courseDoc = {
+    const courseDoc = normalizeCourseDoc({
       courseId,
       courseCode,
       courseName,
       department: department || 'Engineering',
+      degree: degree || (courseCode.startsWith('BTECH') ? 'B.Tech' : courseCode),
       degreeLevel,
       durationYears: Number(durationYears),
-      intakeCapacity: Number(intakeCapacity),
+      intakeCapacity: Number(seats || intakeCapacity),
+      seats: Number(seats || intakeCapacity),
       applicationFee: Number(applicationFee),
-      min10thPercent: Number(min10thPercent),
-      min12thPercent: Number(min12thPercent),
+      min10thPercent: Number(minTenthPercentage || min10thPercent),
+      min12thPercent: Number(minTwelfthPercentage || min12thPercent),
+      minTenthPercentage: Number(minTenthPercentage || min10thPercent),
+      minTwelfthPercentage: Number(minTwelfthPercentage || min12thPercent),
+      eligibilityCriteria,
       isActive: true,
+      isOpen: 1,
       createdAt: new Date().toISOString()
-    };
+    });
 
     collections.courses[String(courseId)] = courseDoc;
     persistStore();
@@ -182,16 +225,16 @@ const CourseModel = {
   },
 
   async getAll() {
-    return Object.values(collections.courses);
+    return Object.values(collections.courses).map(normalizeCourseDoc);
   },
 
   async findById(courseId) {
     const idStr = String(courseId);
-    if (collections.courses[idStr]) return collections.courses[idStr];
+    if (collections.courses[idStr]) return normalizeCourseDoc(collections.courses[idStr]);
     const match = Object.values(collections.courses).find(c => c.courseCode === courseId || c.courseId === Number(courseId));
-    if (match) return match;
+    if (match) return normalizeCourseDoc(match);
     const all = Object.values(collections.courses);
-    return all.length > 0 ? all[0] : null;
+    return all.length > 0 ? normalizeCourseDoc(all[0]) : null;
   },
 
   async count() {

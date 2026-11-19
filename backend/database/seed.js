@@ -26,57 +26,82 @@ async function seed() {
     {
       courseCode: 'BTECH-CSE',
       courseName: 'B.Tech in Computer Science and Engineering',
+      degree: 'B.Tech',
       degreeLevel: 'UG',
       durationYears: 4,
       department: 'Computer Science & Engineering',
       intakeCapacity: 180,
+      seats: 180,
       applicationFee: 1200.0,
       min10thPercent: 60.0,
-      min12thPercent: 60.0
+      min12thPercent: 60.0,
+      minTenthPercentage: 60.0,
+      minTwelfthPercentage: 60.0,
+      eligibilityCriteria: '10+2 Higher Secondary with Physics, Mathematics & Chemistry/CompSc with minimum 60% aggregate and valid WBJEE / JEE Main rank.'
     },
     {
       courseCode: 'BTECH-IT',
       courseName: 'B.Tech in Information Technology',
+      degree: 'B.Tech',
       degreeLevel: 'UG',
       durationYears: 4,
       department: 'Information Technology',
       intakeCapacity: 120,
+      seats: 120,
       applicationFee: 1200.0,
       min10thPercent: 60.0,
-      min12thPercent: 60.0
+      min12thPercent: 60.0,
+      minTenthPercentage: 60.0,
+      minTwelfthPercentage: 60.0,
+      eligibilityCriteria: '10+2 Higher Secondary with Physics, Mathematics & Chemistry with minimum 60% aggregate and valid WBJEE / JEE Main score.'
     },
     {
       courseCode: 'BTECH-ECE',
       courseName: 'B.Tech in Electronics and Communication Engineering',
+      degree: 'B.Tech',
       degreeLevel: 'UG',
       durationYears: 4,
       department: 'Electronics & Communication',
       intakeCapacity: 120,
+      seats: 120,
       applicationFee: 1200.0,
       min10thPercent: 55.0,
-      min12thPercent: 55.0
+      min12thPercent: 55.0,
+      minTenthPercentage: 55.0,
+      minTwelfthPercentage: 55.0,
+      eligibilityCriteria: '10+2 Higher Secondary with Physics and Mathematics with minimum 55% aggregate marks.'
     },
     {
       courseCode: 'BCA',
       courseName: 'Bachelor of Computer Applications (BCA)',
+      degree: 'BCA',
       degreeLevel: 'UG',
       durationYears: 3,
       department: 'Computer Applications',
       intakeCapacity: 120,
+      seats: 120,
       applicationFee: 1000.0,
       min10thPercent: 50.0,
-      min12thPercent: 50.0
+      min12thPercent: 50.0,
+      minTenthPercentage: 50.0,
+      minTwelfthPercentage: 50.0,
+      eligibilityCriteria: '10+2 Higher Secondary in any stream with Mathematics / Computer Application / Statistics with at least 50% aggregate marks.'
     },
     {
       courseCode: 'MCA',
       courseName: 'Master of Computer Applications (MCA)',
+      degree: 'MCA',
       degreeLevel: 'PG',
       durationYears: 2,
       department: 'Computer Applications',
       intakeCapacity: 60,
+      seats: 60,
       applicationFee: 1200.0,
       min10thPercent: 50.0,
-      min12thPercent: 50.0
+      min12thPercent: 50.0,
+      minTenthPercentage: 50.0,
+      minTwelfthPercentage: 50.0,
+      eligibilityCriteria: 'BCA / B.Sc in CS or IT with minimum 55% aggregate and valid JECA / IEMJEE score.'
     }
   ];
 
