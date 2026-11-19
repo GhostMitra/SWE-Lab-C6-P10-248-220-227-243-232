@@ -229,6 +229,85 @@ router.get('/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// 6b. PUT /api/applications/:id (Update Application details by Applicant)
+router.put('/:id', authenticateToken, authorizeRoles('APPLICANT'), async (req, res) => {
+  try {
+    const app = await ApplicationModel.findById(req.params.id);
+    if (!app) {
+      return res.status(404).json({ success: false, message: 'Application not found.' });
+    }
+    if (app.userId !== req.user.userId) {
+      return res.status(403).json({ success: false, message: 'Unauthorized to edit this application.' });
+    }
+
+    const {
+      courseId,
+      dateOfBirth,
+      gender,
+      address,
+      guardianName,
+      guardianPhone,
+      tenthPercentage,
+      tenthBoard,
+      tenthYear,
+      twelfthPercentage,
+      twelfthBoard,
+      twelfthYear,
+      twelfthStream
+    } = req.body;
+
+    // Update applicant profile
+    await ApplicantModel.upsert(req.user.userId, {
+      dateOfBirth,
+      gender,
+      address,
+      guardianName,
+      guardianPhone,
+      tenthPercentage: parseFloat(tenthPercentage) || null,
+      tenthBoard,
+      tenthYear: parseInt(tenthYear, 10) || null,
+      twelfthPercentage: parseFloat(twelfthPercentage) || null,
+      twelfthBoard,
+      twelfthYear: parseInt(twelfthYear, 10) || null,
+      twelfthStream
+    });
+
+    if (courseId) {
+      const course = await CourseModel.findById(courseId);
+      if (course) {
+        app.courseId = course.courseId;
+        app.courseCode = course.courseCode;
+        app.courseName = course.courseName;
+      }
+    }
+
+    const score10 = parseFloat(tenthPercentage) || app.marks10th || 0;
+    const score12 = parseFloat(twelfthPercentage) || app.marks12th || 0;
+    app.marks10th = score10;
+    app.marks12th = score12;
+    app.meritScore = Number(((score12 * 0.60) + (score10 * 0.40)).toFixed(2));
+    app.updatedAt = new Date().toISOString();
+
+    const { persistStore, collections, LiveFirestoreClient } = require('../models/firestore-models');
+    if (collections && collections.applications && collections.applications[req.params.id]) {
+      collections.applications[req.params.id] = {
+        ...collections.applications[req.params.id],
+        ...app
+      };
+      persistStore();
+      LiveFirestoreClient.setDoc('applications', req.params.id, collections.applications[req.params.id]).catch(() => {});
+    }
+
+    res.json({
+      success: true,
+      message: 'Application details updated successfully.',
+      application: app
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // 7. PUT /api/applications/:id/status (FR-5: Officer / Admin Review Decision)
 router.put('/:id/status', authenticateToken, authorizeRoles('ADMISSION_OFFICER', 'ADMINISTRATOR'), async (req, res) => {
   try {

@@ -92,8 +92,36 @@ export class ApiService {
     return prefix + (path.startsWith('/') ? path : '/' + path);
   }
 
+  isOfficer = computed(() => {
+    const r = (this.currentUser()?.role || '').toUpperCase();
+    return r === 'OFFICER' || r === 'ADMISSION_OFFICER' || r === 'ADMINISTRATOR';
+  });
+
+  isAdmin = computed(() => {
+    const r = (this.currentUser()?.role || '').toUpperCase();
+    return r === 'ADMIN' || r === 'ADMINISTRATOR';
+  });
+
+  isApplicant = computed(() => {
+    const r = (this.currentUser()?.role || '').toUpperCase();
+    return r === 'APPLICANT';
+  });
+
   constructor(private http: HttpClient) {
     this.loadSession();
+  }
+
+  private normalizeUser(user: any): User | null {
+    if (!user) return null;
+    const roleUpper = (user.role || '').toUpperCase();
+    const normalizedRole: 'APPLICANT' | 'ADMISSION_OFFICER' | 'ADMINISTRATOR' = 
+      (roleUpper === 'OFFICER' || roleUpper === 'ADMISSION_OFFICER')
+        ? 'ADMISSION_OFFICER'
+        : (roleUpper === 'ADMIN' || roleUpper === 'ADMINISTRATOR' ? 'ADMINISTRATOR' : 'APPLICANT');
+    return {
+      ...user,
+      role: normalizedRole
+    };
   }
 
   private loadSession(): void {
@@ -102,7 +130,8 @@ export class ApiService {
     if (savedToken && savedUser) {
       try {
         this.token.set(savedToken);
-        this.currentUser.set(JSON.parse(savedUser));
+        const parsed = JSON.parse(savedUser);
+        this.currentUser.set(this.normalizeUser(parsed));
       } catch (e) {
         this.logout();
       }
@@ -149,11 +178,12 @@ export class ApiService {
     );
   }
 
-  setSession(token: string, user: User): void {
+  setSession(token: string, user: any): void {
+    const normalized = this.normalizeUser(user);
     this.token.set(token);
-    this.currentUser.set(user);
+    this.currentUser.set(normalized);
     localStorage.setItem('iem_token', token);
-    localStorage.setItem('iem_user', JSON.stringify(user));
+    localStorage.setItem('iem_user', JSON.stringify(normalized));
   }
 
   logout(): void {
@@ -183,6 +213,10 @@ export class ApiService {
   // --- Applications ---
   submitApplication(data: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/applications`, data, { headers: this.getHeaders() });
+  }
+
+  updateApplication(id: string, data: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/applications/${id}`, data, { headers: this.getHeaders() });
   }
 
   getMyApplications(): Observable<{ success: boolean; applications: Application[] }> {

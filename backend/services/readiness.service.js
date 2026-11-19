@@ -59,7 +59,11 @@ async function checkApplicationReadiness(application) {
 
   // 3. Check fee payment completed
   const payment = await PaymentModel.findByApplicationId(application.applicationId);
-  const feePaid = Boolean(payment && payment.status === 'SUCCESS');
+  const feePaid = Boolean(
+    (payment && (payment.status === 'SUCCESS' || payment.status === 'COMPLETED' || payment.status === 'PAID')) ||
+    application.paymentStatus === 'PAID' ||
+    application.paymentStatus === 'SUCCESS'
+  );
 
   const isReady = validateApplicationReadiness(formComplete, documentsUploaded, feePaid);
 

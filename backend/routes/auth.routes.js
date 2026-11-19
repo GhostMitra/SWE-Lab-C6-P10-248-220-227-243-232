@@ -113,8 +113,10 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials. Incorrect password.' });
     }
 
+    const effectiveRole = (user.role === 'OFFICER') ? 'ADMISSION_OFFICER' : user.role;
+
     const token = jwt.sign(
-      { userId: user.userId, email: user.email, role: user.role, fullName: user.fullName },
+      { userId: user.userId, email: user.email, role: effectiveRole, fullName: user.fullName },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -138,7 +140,7 @@ router.post('/login', async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         phone: user.phone,
-        role: user.role
+        role: effectiveRole
       }
     });
   } catch (err) {

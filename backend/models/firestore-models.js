@@ -258,13 +258,28 @@ const ApplicationModel = {
     const app = collections.applications[applicationId];
     if (!app) return null;
 
-    const applicantId = app.applicantId || app.userId;
+    const applicantId = Number(app.applicantId || app.userId || 1);
     // Attach student, applicant profile, course, documents, and payment details
     const student = await UserModel.findById(applicantId);
     const applicantProfile = collections.applicants[String(applicantId)] || {};
     const course = await CourseModel.findById(app.courseId);
     const docs = await DocumentModel.findByApplicationId(applicationId);
-    const payment = await PaymentModel.findByApplicationId(applicationId);
+    let payment = await PaymentModel.findByApplicationId(applicationId);
+    if (!payment && (app.paymentStatus === 'PAID' || app.paymentStatus === 'SUCCESS')) {
+      payment = {
+        paymentId: `PAY-${app.applicationId}`,
+        applicationId: app.applicationId,
+        amount: course ? course.applicationFee : 1200,
+        status: 'SUCCESS',
+        transactionId: `TXN-IEM-${app.applicationId.slice(-4)}`
+      };
+    } else if (payment && (payment.status === 'COMPLETED' || payment.status === 'PAID')) {
+      payment.status = 'SUCCESS';
+    }
+
+    const resolvedFullName = (student && student.fullName) ? student.fullName : (applicantProfile.fullName || 'Applicant');
+    const resolvedEmail = (student && student.email) ? student.email : (applicantProfile.email || '');
+    const resolvedPhone = (student && student.phone) ? student.phone : (applicantProfile.phone || applicantProfile.guardianPhone || '');
 
     const tenthPercentage = Number(app.tenthPercentage !== undefined && app.tenthPercentage !== null ? app.tenthPercentage : (app.marks10th !== undefined && app.marks10th !== null ? app.marks10th : (applicantProfile.tenthPercentage || 0)));
     const twelfthPercentage = Number(app.twelfthPercentage !== undefined && app.twelfthPercentage !== null ? app.twelfthPercentage : (app.marks12th !== undefined && app.marks12th !== null ? app.marks12th : (applicantProfile.twelfthPercentage || 0)));
@@ -275,6 +290,7 @@ const ApplicationModel = {
 
     return {
       ...app,
+      ...applicantProfile,
       userId: applicantId,
       applicantId: applicantId,
       fullName: candidateFullName,
@@ -287,6 +303,7 @@ const ApplicationModel = {
       gender: applicantProfile.gender || app.gender || 'Not Specified',
       address: applicantProfile.address || app.address || 'Kolkata, West Bengal',
       guardianName: applicantProfile.guardianName || app.guardianName || 'Guardian',
+      guardianPhone: applicantProfile.guardianPhone || app.guardianPhone || null,
       tenthBoard: applicantProfile.tenthBoard || app.tenthBoard || 'CBSE',
       tenthYear: applicantProfile.tenthYear || app.tenthYear || null,
       tenthPercentage,
@@ -298,7 +315,8 @@ const ApplicationModel = {
       marks12th: twelfthPercentage,
       courseName: course ? course.courseName : (app.courseName || 'Selected Course'),
       courseCode: course ? course.courseCode : (app.courseCode || ''),
-      applicationFee: course ? course.applicationFee : (app.applicationFee || 1000),
+      degree: course ? course.degree : (app.degree || 'B.Tech'),
+      applicationFee: course ? course.applicationFee : (app.applicationFee || 1200),
       documents: docs,
       payment
     };
@@ -419,23 +437,24 @@ const DocumentModel = {
         ...d,
         documentId: d.documentId || d.docId,
         fileName: d.fileName || d.originalName,
-        filePath: d.filePath || d.publicUrl,
+        filePath: d.filePath || d.publicUrl || d.storagePath,
         fileSize: d.fileSize || d.sizeBytes
       }));
   },
 
   async updateVerification(docId, status, remarks = '') {
-    const doc = collections.documents[String(docId)];
+    const idStr = String(docId);
+    const doc = collections.documents[idStr] || Object.values(collections.documents).find(d => String(d.docId) === idStr || String(d.documentId) === idStr);
     if (!doc) throw new Error(`Document ${docId} not found`);
 
     doc.verificationStatus = status.toUpperCase();
     doc.verificationRemarks = remarks;
     doc.verifiedAt = new Date().toISOString();
 
-    collections.documents[String(docId)] = doc;
+    collections.documents[String(doc.docId || docId)] = doc;
     persistStore();
 
-    LiveFirestoreClient.setDoc('documents', String(docId), doc).catch(() => {});
+    LiveFirestoreClient.setDoc('documents', String(doc.docId || docId), doc).catch(() => {});
     return doc;
   }
 };
@@ -485,12 +504,13 @@ const PaymentModel = {
     const pay = await this.findById(paymentId);
     if (!pay) throw new Error(`Payment ${paymentId} not found`);
 
-    pay.status = status.toUpperCase();
+    const normalizedStatus = (status === 'COMPLETED' || status === 'PAID') ? 'SUCCESS' : status.toUpperCase();
+    pay.status = normalizedStatus;
     if (transactionId) {
       pay.transactionId = transactionId;
       pay.gatewayTransactionId = transactionId;
     }
-    if (status === 'SUCCESS' || status === 'COMPLETED') {
+    if (normalizedStatus === 'SUCCESS') {
       pay.completedAt = new Date().toISOString();
       if (collections.applications[pay.applicationId]) {
         collections.applications[pay.applicationId].paymentStatus = 'PAID';
@@ -510,7 +530,18 @@ const PaymentModel = {
   },
 
   async findByApplicationId(applicationId) {
-    return Object.values(collections.payments).find(p => p.applicationId === applicationId) || null;
+    const matching = Object.values(collections.payments).filter(p => p.applicationId === applicationId);
+    if (matching.length === 0) return null;
+    // Prefer any successful / completed payment first
+    const successPay = matching.find(p => p.status === 'SUCCESS' || p.status === 'COMPLETED' || p.status === 'PAID');
+    if (successPay) {
+      return {
+        ...successPay,
+        status: 'SUCCESS'
+      };
+    }
+    // Otherwise return most recent payment record
+    return matching[matching.length - 1];
   },
 
   async getRevenueSummary() {
