@@ -36,60 +36,75 @@ export class FirebaseService {
   statusData = signal<any>(null);
 
   config: FirebaseConfig = {
-    apiKey: "AIzaSyB7NqQ1dH_qvlPg62VKg1rhNTw4P9uhRU8",
-    authDomain: "iem-admission-404bn.firebaseapp.com",
-    projectId: "iem-admission-404bn",
-    storageBucket: "iem-admission-404bn.firebasestorage.app",
-    messagingSenderId: "182328521276",
-    appId: "1:182328521276:web:b9250ed0be8edea0248939"
+    apiKey: '',
+    authDomain: 'iem-admission-404bn.firebaseapp.com',
+    projectId: 'iem-admission-404bn',
+    storageBucket: 'iem-admission-404bn.firebasestorage.app',
+    messagingSenderId: '',
+    appId: ''
   };
 
   private readonly apiBase = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '4200')
     ? 'http://localhost:5000/api'
     : '/api';
 
+  private configPromise: Promise<void> | null = null;
+
   constructor(private http: HttpClient) {
     this.initFromBackend();
   }
 
-  initFromBackend(): void {
-    // 1. Fetch live diagnostic status from backend
-    this.http.get<any>(`${this.apiBase}/firebase/status`).subscribe({
-      next: (res) => {
-        this.statusData.set(res);
-        this.isLiveCloud.set(res.isLiveCloudSdk);
-      },
-      error: () => {}
-    });
+  initFromBackend(): Promise<void> {
+    if (this.configPromise) {
+      return this.configPromise;
+    }
 
-    // 2. Load Firebase config: On Firebase Hosting, /__/firebase/init.json is native & authoritative
-    const isHosting = typeof window !== 'undefined' && 
-      (window.location.hostname.endsWith('.web.app') || window.location.hostname.endsWith('.firebaseapp.com'));
+    this.configPromise = new Promise<void>((resolve) => {
+      // 1. Fetch live diagnostic status from backend
+      this.http.get<any>(`${this.apiBase}/firebase/status`).subscribe({
+        next: (res) => {
+          this.statusData.set(res);
+          this.isLiveCloud.set(res.isLiveCloudSdk);
+        },
+        error: () => {}
+      });
 
-    const configUrl = isHosting ? '/__/firebase/init.json' : `${this.apiBase}/firebase/config`;
+      // 2. Load Firebase config: On Firebase Hosting, /__/firebase/init.json is native & authoritative (no hardcoded secrets in source)
+      const isHosting = typeof window !== 'undefined' && 
+        (window.location.hostname.endsWith('.web.app') || window.location.hostname.endsWith('.firebaseapp.com'));
 
-    this.http.get<any>(configUrl).subscribe({
-      next: (res) => {
-        const c = res.config || res;
-        // Guard: Never overwrite valid API key with a placeholder or mock key
-        if (c && c.apiKey && !c.apiKey.includes('MockKey') && c.apiKey.startsWith('AIzaSy')) {
-          this.config = { ...this.config, ...c };
+      const configUrl = isHosting ? '/__/firebase/init.json' : `${this.apiBase}/firebase/config`;
+
+      this.http.get<any>(configUrl).subscribe({
+        next: async (res) => {
+          const c = res.config || res;
+          // Guard: Never overwrite with a placeholder or mock key
+          if (c && c.apiKey && !c.apiKey.includes('MockKey')) {
+            this.config = { ...this.config, ...c };
+            await this.setupFirebaseApp();
+          }
+          resolve();
+        },
+        error: async () => {
+          await this.setupFirebaseApp();
+          resolve();
         }
-        this.setupFirebaseApp();
-      },
-      error: () => {
-        this.setupFirebaseApp();
-      }
+      });
     });
+
+    return this.configPromise;
   }
 
   private async setupFirebaseApp(): Promise<void> {
+    if (!this.config.apiKey) {
+      return;
+    }
     try {
       const existing = getApps();
       if (existing.length > 0) {
         const currentApp = existing[0];
-        // If an existing app was created with an old mock key, recreate it with the valid key
-        if ((currentApp.options as any)?.apiKey?.includes('MockKey')) {
+        // If an existing app was created with an old key, recreate it with the valid key
+        if ((currentApp.options as any)?.apiKey !== this.config.apiKey) {
           await deleteApp(currentApp);
           this.app = initializeApp(this.config);
         } else {
@@ -102,7 +117,7 @@ export class FirebaseService {
       this.storage = getStorage(this.app);
       this.firestore = getFirestore(this.app);
       this.isInitialized.set(true);
-      console.log('[Firebase Client] SDK initialized with project:', this.config.projectId);
+      console.log('[Firebase Client] SDK initialized dynamically for project:', this.config.projectId);
     } catch (e: any) {
       console.warn('[Firebase Client] Notice:', e.message);
       this.isInitialized.set(true);
@@ -111,8 +126,8 @@ export class FirebaseService {
 
   // --- Firebase Authentication ---
   async signInGoogle(): Promise<GoogleAuthResult> {
-    if (!this.auth || (this.app?.options as any)?.apiKey?.includes('MockKey')) {
-      await this.setupFirebaseApp();
+    if (!this.auth || !this.config.apiKey) {
+      await this.initFromBackend();
     }
 
     if (this.auth) {
