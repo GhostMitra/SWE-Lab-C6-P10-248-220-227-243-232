@@ -189,12 +189,12 @@ import { ApiService, Application } from '../../services/api.service';
             <div class="d-flex gap-2">
               <!-- If fee not paid: check if required documents uploaded -->
               <ng-container *ngIf="app.payment?.status !== 'SUCCESS'">
-                <a *ngIf="!app.readiness?.documentsUploaded && (app.documents?.length || 0) < 2"
+                <a *ngIf="!app.readiness?.documentsUploaded"
                    [routerLink]="['/apply']" [queryParams]="{ step: 2, appId: app.applicationId }"
                    class="btn btn-sm btn-outline-danger fw-bold">
                   <i class="bi bi-upload me-1"></i> Upload Required Docs First
                 </a>
-                <a *ngIf="app.readiness?.documentsUploaded || (app.documents?.length || 0) >= 2"
+                <a *ngIf="app.readiness?.documentsUploaded"
                    [routerLink]="['/apply']" [queryParams]="{ step: 3, appId: app.applicationId }"
                    class="btn btn-sm btn-warning fw-bold">
                   <i class="bi bi-credit-card me-1"></i> Pay Application Fee (₹ {{ app.applicationFee }})

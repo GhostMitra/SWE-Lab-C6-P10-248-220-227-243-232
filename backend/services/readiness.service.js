@@ -40,10 +40,15 @@ async function checkApplicationReadiness(application) {
     applicant.twelfthPercentage
   );
 
-  // 2. Check documents uploaded (at least marksheets uploaded)
+  // 2. Check documents uploaded (Mandatory: 10th marksheet, 12th marksheet, photo, photo ID, and signature)
   const docs = await DocumentModel.findByApplicationId(application.applicationId);
-  const docTypes = docs.map(d => d.docType);
-  const documentsUploaded = docs.length >= 2 && (docTypes.includes('MARKSHEET_10') || docTypes.includes('MARKSHEET_12'));
+  const docTypes = (docs || []).map(d => d.docType);
+  const has10th = docTypes.includes('MARKSHEET_10');
+  const has12th = docTypes.includes('MARKSHEET_12');
+  const hasPhoto = docTypes.includes('PHOTO') || docTypes.includes('PASSPORT_PHOTO') || docTypes.includes('PHOTO_SIGNATURE');
+  const hasPhotoId = docTypes.includes('PHOTO_ID') || docTypes.includes('IDENTITY_PROOF');
+  const hasSignature = docTypes.includes('SIGNATURE') || docTypes.includes('CANDIDATE_SIGNATURE') || docTypes.includes('PHOTO_SIGNATURE');
+  const documentsUploaded = has10th && has12th && hasPhoto && hasPhotoId && hasSignature;
 
   // 3. Check fee payment completed
   const payment = await PaymentModel.findByApplicationId(application.applicationId);

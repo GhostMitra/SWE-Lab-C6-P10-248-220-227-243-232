@@ -123,8 +123,13 @@ function resolveSubBucket(docType) {
     case 'MARKSHEET_10':
     case 'MARKSHEET_12':
       return SUB_BUCKETS.ACADEMIC_DOCS;
+    case 'PHOTO':
+    case 'PASSPORT_PHOTO':
     case 'PHOTO_SIGNATURE':
+    case 'SIGNATURE':
+    case 'CANDIDATE_SIGNATURE':
       return SUB_BUCKETS.CANDIDATE_MEDIA;
+    case 'PHOTO_ID':
     case 'IDENTITY_PROOF':
       return SUB_BUCKETS.VERIFICATION_CERTS;
     case 'ADMISSION_LETTER':

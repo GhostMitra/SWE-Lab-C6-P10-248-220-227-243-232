@@ -154,10 +154,13 @@ import { FirebaseService } from '../../services/firebase.service';
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Select Document Category *</label>
                   <select class="form-select" [(ngModel)]="uploadDocType">
-                    <option value="MARKSHEET_10">Class 10th Secondary Marksheet (PDF)</option>
-                    <option value="MARKSHEET_12">Class 12th Higher Secondary Marksheet (PDF)</option>
-                    <option value="IDENTITY_PROOF">Identity Proof (Aadhaar / Passport / Voter ID)</option>
-                    <option value="PHOTO_SIGNATURE">Passport Photograph & Signature</option>
+                    <option value="MARKSHEET_10">Class 10th Secondary Marksheet (PDF) *</option>
+                    <option value="MARKSHEET_12">Class 12th Higher Secondary Marksheet (PDF) *</option>
+                    <option value="PHOTO">Recent Passport Size Photograph (JPG/PNG) *</option>
+                    <option value="PHOTO_ID">Government Photo ID (Aadhaar / Passport / Voter ID) *</option>
+                    <option value="SIGNATURE">Candidate Signature (JPG/PNG) *</option>
+                    <option value="IDENTITY_PROOF">Identity Proof (Alternative)</option>
+                    <option value="PHOTO_SIGNATURE">Combined Photo & Signature (Alternative)</option>
                   </select>
                 </div>
 
@@ -216,18 +219,30 @@ import { FirebaseService } from '../../services/firebase.service';
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
               <div>
                 <strong><i class="bi" [ngClass]="hasRequiredDocs() ? 'bi-check-circle-fill text-success' : 'bi-exclamation-triangle-fill text-warning'"></i>
-                Prerequisite for Fee Payment:</strong>
-                <span *ngIf="!hasRequiredDocs()" class="ms-1 text-danger fw-semibold">Upload both Class 10th and 12th Marksheets to unlock Fee Payment.</span>
-                <span *ngIf="hasRequiredDocs()" class="ms-1 text-success fw-semibold">Required documents uploaded. Payment is unlocked.</span>
+                Prerequisites for Fee Payment:</strong>
+                <span *ngIf="!hasRequiredDocs()" class="ms-1 text-danger fw-semibold">Upload all 5 mandatory documents (10th & 12th Marksheets, Photo, Photo ID, Signature) to unlock payment.</span>
+                <span *ngIf="hasRequiredDocs()" class="ms-1 text-success fw-semibold">All mandatory documents uploaded. Payment is unlocked.</span>
               </div>
-              <div class="d-flex gap-2">
-                <span class="badge" [ngClass]="hasDocType('MARKSHEET_10') ? 'bg-success' : 'bg-danger'">
-                  <i class="bi" [ngClass]="hasDocType('MARKSHEET_10') ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
-                  10th Marksheet: {{ hasDocType('MARKSHEET_10') ? 'UPLOADED' : 'PENDING' }}
+              <div class="d-flex flex-wrap gap-2">
+                <span class="badge" [ngClass]="has10thMarksheet() ? 'bg-success' : 'bg-danger'">
+                  <i class="bi" [ngClass]="has10thMarksheet() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                  10th Marksheet: {{ has10thMarksheet() ? 'OK' : 'REQUIRED' }}
                 </span>
-                <span class="badge" [ngClass]="hasDocType('MARKSHEET_12') ? 'bg-success' : 'bg-danger'">
-                  <i class="bi" [ngClass]="hasDocType('MARKSHEET_12') ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
-                  12th Marksheet: {{ hasDocType('MARKSHEET_12') ? 'UPLOADED' : 'PENDING' }}
+                <span class="badge" [ngClass]="has12thMarksheet() ? 'bg-success' : 'bg-danger'">
+                  <i class="bi" [ngClass]="has12thMarksheet() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                  12th Marksheet: {{ has12thMarksheet() ? 'OK' : 'REQUIRED' }}
+                </span>
+                <span class="badge" [ngClass]="hasPhoto() ? 'bg-success' : 'bg-danger'">
+                  <i class="bi" [ngClass]="hasPhoto() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                  Photo: {{ hasPhoto() ? 'OK' : 'REQUIRED' }}
+                </span>
+                <span class="badge" [ngClass]="hasPhotoId() ? 'bg-success' : 'bg-danger'">
+                  <i class="bi" [ngClass]="hasPhotoId() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                  Photo ID: {{ hasPhotoId() ? 'OK' : 'REQUIRED' }}
+                </span>
+                <span class="badge" [ngClass]="hasSignature() ? 'bg-success' : 'bg-danger'">
+                  <i class="bi" [ngClass]="hasSignature() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                  Signature: {{ hasSignature() ? 'OK' : 'REQUIRED' }}
                 </span>
               </div>
             </div>
@@ -248,20 +263,35 @@ import { FirebaseService } from '../../services/firebase.service';
         <div *ngIf="currentStep() === 3">
           <!-- When required documents are missing -->
           <div *ngIf="!hasRequiredDocs() && !paymentDone()" class="row justify-content-center my-4">
-            <div class="col-md-7">
+            <div class="col-md-8">
               <div class="p-4 bg-light rounded-3 border text-center shadow-sm">
                 <i class="bi bi-shield-lock-fill text-danger display-4 d-block mb-3"></i>
                 <h5 class="fw-bold text-danger">Fee Payment Locked</h5>
                 <p class="text-muted mb-3">
-                  You cannot proceed with fee payment until you have uploaded the mandatory admission documents:
-                  <br>
-                  <span class="badge me-1" [ngClass]="hasDocType('MARKSHEET_10') ? 'bg-success' : 'bg-danger'">
-                    10th Marksheet: {{ hasDocType('MARKSHEET_10') ? 'UPLOADED' : 'REQUIRED' }}
-                  </span>
-                  <span class="badge" [ngClass]="hasDocType('MARKSHEET_12') ? 'bg-success' : 'bg-danger'">
-                    12th Marksheet: {{ hasDocType('MARKSHEET_12') ? 'UPLOADED' : 'REQUIRED' }}
-                  </span>
+                  You cannot proceed with fee payment until you have uploaded all 5 mandatory admission documents:
                 </p>
+                <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+                  <span class="badge p-2" [ngClass]="has10thMarksheet() ? 'bg-success' : 'bg-danger'">
+                    <i class="bi" [ngClass]="has10thMarksheet() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                    10th Marksheet: {{ has10thMarksheet() ? 'UPLOADED' : 'REQUIRED' }}
+                  </span>
+                  <span class="badge p-2" [ngClass]="has12thMarksheet() ? 'bg-success' : 'bg-danger'">
+                    <i class="bi" [ngClass]="has12thMarksheet() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                    12th Marksheet: {{ has12thMarksheet() ? 'UPLOADED' : 'REQUIRED' }}
+                  </span>
+                  <span class="badge p-2" [ngClass]="hasPhoto() ? 'bg-success' : 'bg-danger'">
+                    <i class="bi" [ngClass]="hasPhoto() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                    Passport Photo: {{ hasPhoto() ? 'UPLOADED' : 'REQUIRED' }}
+                  </span>
+                  <span class="badge p-2" [ngClass]="hasPhotoId() ? 'bg-success' : 'bg-danger'">
+                    <i class="bi" [ngClass]="hasPhotoId() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                    Photo ID: {{ hasPhotoId() ? 'UPLOADED' : 'REQUIRED' }}
+                  </span>
+                  <span class="badge p-2" [ngClass]="hasSignature() ? 'bg-success' : 'bg-danger'">
+                    <i class="bi" [ngClass]="hasSignature() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                    Signature: {{ hasSignature() ? 'UPLOADED' : 'REQUIRED' }}
+                  </span>
+                </div>
                 <button type="button" class="btn btn-iem-primary fw-bold" (click)="goToStep(2)">
                   <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload Required Documents Now
                 </button>
@@ -554,11 +584,32 @@ export class ApplyComponent implements OnInit {
     return this.uploadedDocs().some((d: any) => d.docType === type);
   }
 
+  has10thMarksheet(): boolean {
+    return this.hasDocType('MARKSHEET_10');
+  }
+
+  has12thMarksheet(): boolean {
+    return this.hasDocType('MARKSHEET_12');
+  }
+
+  hasPhoto(): boolean {
+    return this.uploadedDocs().some((d: any) => ['PHOTO', 'PASSPORT_PHOTO', 'PHOTO_SIGNATURE'].includes(d.docType));
+  }
+
+  hasPhotoId(): boolean {
+    return this.uploadedDocs().some((d: any) => ['PHOTO_ID', 'IDENTITY_PROOF'].includes(d.docType));
+  }
+
+  hasSignature(): boolean {
+    return this.uploadedDocs().some((d: any) => ['SIGNATURE', 'CANDIDATE_SIGNATURE', 'PHOTO_SIGNATURE'].includes(d.docType));
+  }
+
   hasRequiredDocs(): boolean {
-    const docs = this.uploadedDocs();
-    if (!docs || docs.length === 0) return false;
-    const types = docs.map((d: any) => d.docType);
-    return types.includes('MARKSHEET_10') && types.includes('MARKSHEET_12');
+    return this.has10thMarksheet() &&
+           this.has12thMarksheet() &&
+           this.hasPhoto() &&
+           this.hasPhotoId() &&
+           this.hasSignature();
   }
 
   loadApplicationDocs(appId: string): void {
@@ -569,7 +620,7 @@ export class ApplyComponent implements OnInit {
           // If applicant navigated directly to step 3 without required documents, redirect back to step 2
           if (this.currentStep() === 3 && !this.hasRequiredDocs()) {
             this.currentStep.set(2);
-            this.errorMessage.set('Document prerequisite: You must upload both Class 10th and 12th marksheets before proceeding with fee payment.');
+            this.errorMessage.set('Document prerequisite: You must upload all 5 mandatory documents (Class 10th and 12th marksheets, Passport Photo, Photo ID, and Signature) before proceeding with fee payment.');
           }
         }
       }
@@ -578,7 +629,7 @@ export class ApplyComponent implements OnInit {
 
   onPayFee(): void {
     if (!this.hasRequiredDocs()) {
-      this.errorMessage.set('Cannot proceed with payment: Mandatory documents (10th and 12th marksheets) are missing.');
+      this.errorMessage.set('Cannot proceed with payment: Mandatory documents (10th & 12th marksheets, Photo, Photo ID, and Signature) are missing.');
       this.currentStep.set(2);
       return;
     }

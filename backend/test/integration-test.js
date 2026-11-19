@@ -140,7 +140,46 @@ async function runTests(port = 5089) {
       fileSize: 2048,
       mimeType: 'application/pdf'
     });
-    console.log('  Result: Required documents (10th & 12th marksheets) uploaded successfully -> PASS');
+
+    // Check payment still locked when Photo, Photo ID, and Signature are missing
+    const partialDocsPay = await request({
+      hostname: 'localhost',
+      port,
+      path: '/api/payments/initiate',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+    }, { applicationId: appId, paymentMethod: 'UPI' });
+    if (partialDocsPay.status !== 400) {
+      throw new Error(`Expected 400 when photo/id/signature missing, got ${partialDocsPay.status}`);
+    }
+    console.log(`  Partial docs check: Status ${partialDocsPay.status} (Expected 400: Missing Photo, Photo ID, Signature) -> PASS`);
+
+    // Upload Photo, Photo ID, and Signature
+    await DocumentModel.create({
+      applicationId: appId,
+      docType: 'PHOTO',
+      fileName: 'candidate_photo_test.jpg',
+      filePath: `/api/storage/buckets/candidate-media/photo_${appId}.jpg`,
+      fileSize: 1024,
+      mimeType: 'image/jpeg'
+    });
+    await DocumentModel.create({
+      applicationId: appId,
+      docType: 'PHOTO_ID',
+      fileName: 'aadhaar_card_test.pdf',
+      filePath: `/api/storage/buckets/verification-certs/photoid_${appId}.pdf`,
+      fileSize: 1536,
+      mimeType: 'application/pdf'
+    });
+    await DocumentModel.create({
+      applicationId: appId,
+      docType: 'SIGNATURE',
+      fileName: 'candidate_signature_test.png',
+      filePath: `/api/storage/buckets/candidate-media/signature_${appId}.png`,
+      fileSize: 512,
+      mimeType: 'image/png'
+    });
+    console.log('  Result: All 5 mandatory documents (10th, 12th marksheets, photo, photo ID, signature) uploaded successfully -> PASS');
 
     // TC-S05: Fee payment (Now allowed because documents are present)
     console.log('\n[TEST TC-S05] Application Fee Payment via Gateway...');

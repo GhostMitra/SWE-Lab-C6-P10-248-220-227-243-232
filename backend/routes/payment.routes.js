@@ -33,19 +33,29 @@ router.post('/initiate', authenticateToken, authorizeRoles('APPLICANT'), async (
     }
 
     // Prerequisite Check: Required admission documents must be uploaded before proceeding with fee payment
+    // Mandatory: Class 10th Marksheet, Class 12th Marksheet, Passport Photo, Photo ID Proof, and Candidate Signature
     const docs = await DocumentModel.findByApplicationId(applicationId);
     const docTypes = (docs || []).map(d => d.docType);
-    const hasRequiredDocs = docs && docs.length > 0 && (
-      (docTypes.includes('MARKSHEET_10') && docTypes.includes('MARKSHEET_12')) ||
-      docTypes.includes('MARKSHEET_10') ||
-      docs.length >= 2
-    );
 
-    if (!docs || docs.length === 0 || !hasRequiredDocs) {
+    const has10th = docTypes.includes('MARKSHEET_10');
+    const has12th = docTypes.includes('MARKSHEET_12');
+    const hasPhoto = docTypes.includes('PHOTO') || docTypes.includes('PASSPORT_PHOTO') || docTypes.includes('PHOTO_SIGNATURE');
+    const hasPhotoId = docTypes.includes('PHOTO_ID') || docTypes.includes('IDENTITY_PROOF');
+    const hasSignature = docTypes.includes('SIGNATURE') || docTypes.includes('CANDIDATE_SIGNATURE') || docTypes.includes('PHOTO_SIGNATURE');
+
+    const missingDocs = [];
+    if (!has10th) missingDocs.push('Class 10th Marksheet');
+    if (!has12th) missingDocs.push('Class 12th Marksheet');
+    if (!hasPhoto) missingDocs.push('Passport Photo');
+    if (!hasPhotoId) missingDocs.push('Photo ID');
+    if (!hasSignature) missingDocs.push('Candidate Signature');
+
+    if (missingDocs.length > 0) {
       return res.status(400).json({
         success: false,
-        message: 'Payment rejected: You must upload the required admission documents (Class 10th and 12th marksheets) before proceeding with payment.',
-        requiresDocuments: true
+        message: `Payment rejected: You must upload all mandatory admission documents before proceeding with payment. Missing: ${missingDocs.join(', ')}.`,
+        requiresDocuments: true,
+        missingDocuments: missingDocs
       });
     }
 
