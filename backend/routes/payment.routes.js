@@ -39,9 +39,9 @@ router.post('/initiate', authenticateToken, authorizeRoles('APPLICANT'), async (
 
     const has10th = docTypes.includes('MARKSHEET_10');
     const has12th = docTypes.includes('MARKSHEET_12');
-    const hasPhoto = docTypes.includes('PHOTO') || docTypes.includes('PASSPORT_PHOTO') || docTypes.includes('PHOTO_SIGNATURE');
+    const hasPhoto = docTypes.includes('PHOTO') || docTypes.includes('PASSPORT_PHOTO');
     const hasPhotoId = docTypes.includes('PHOTO_ID') || docTypes.includes('IDENTITY_PROOF');
-    const hasSignature = docTypes.includes('SIGNATURE') || docTypes.includes('CANDIDATE_SIGNATURE') || docTypes.includes('PHOTO_SIGNATURE');
+    const hasSignature = docTypes.includes('SIGNATURE') || docTypes.includes('CANDIDATE_SIGNATURE');
 
     const missingDocs = [];
     if (!has10th) missingDocs.push('Class 10th Marksheet');

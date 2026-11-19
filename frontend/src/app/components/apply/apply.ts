@@ -146,21 +146,105 @@ import { FirebaseService } from '../../services/firebase.service';
             </div>
           </div>
 
+          <!-- SECTION 1: SEPARATE PHOTO AND SIGNATURE UPLOADS -->
+          <div class="mb-4">
+            <h6 class="fw-bold text-dark mb-2">
+              <i class="bi bi-person-badge text-primary me-2"></i>Mandatory Identity Media (Separate Uploads)
+            </h6>
+            <div class="row g-3">
+              <!-- Dedicated Photo Upload Card -->
+              <div class="col-md-6">
+                <div class="card h-100 p-3 shadow-sm rounded-3 border" [ngClass]="hasPhoto() ? 'border-success bg-success bg-opacity-10' : 'border-secondary-subtle bg-light'">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold text-dark">
+                      <i class="bi bi-camera-fill text-primary me-1"></i> Passport Photograph *
+                    </span>
+                    <span class="badge" [ngClass]="hasPhoto() ? 'bg-success' : 'bg-danger'">
+                      <i class="bi" [ngClass]="hasPhoto() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                      {{ hasPhoto() ? 'UPLOADED' : 'REQUIRED' }}
+                    </span>
+                  </div>
+                  <p class="small text-muted mb-2" style="font-size: 0.8rem;">
+                    Recent color passport-size photograph (JPG, PNG - Max 5MB).
+                  </p>
+
+                  <div *ngIf="getDoc('PHOTO')" class="d-flex align-items-center justify-content-between p-2 mb-2 bg-white rounded border">
+                    <div class="d-flex align-items-center gap-2 text-truncate me-2">
+                      <i class="bi bi-file-earmark-image-fill text-success fs-5"></i>
+                      <div class="text-truncate">
+                        <div class="small fw-bold text-truncate">{{ getDoc('PHOTO')?.fileName }}</div>
+                        <span class="text-muted" style="font-size: 0.72rem;">{{ (getDoc('PHOTO')?.fileSize / 1024) | number:'1.0-1' }} KB &bull; candidate-media</span>
+                      </div>
+                    </div>
+                    <a [href]="api.getFileUrl(getDoc('PHOTO')?.filePath)" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.75rem;">
+                      <i class="bi bi-eye"></i> View
+                    </a>
+                  </div>
+
+                  <div class="input-group input-group-sm mt-auto">
+                    <input type="file" class="form-control" accept="image/png, image/jpeg, image/jpg" (change)="onPhotoFileSelected($event)">
+                    <button class="btn btn-iem-primary fw-bold" type="button" (click)="uploadPhoto()" [disabled]="uploadingPhoto() || !photoFile">
+                      <span class="spinner-border spinner-border-sm me-1" *ngIf="uploadingPhoto()"></span>
+                      <i class="bi bi-upload me-1" *ngIf="!uploadingPhoto()"></i>Upload Photo
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dedicated Signature Upload Card -->
+              <div class="col-md-6">
+                <div class="card h-100 p-3 shadow-sm rounded-3 border" [ngClass]="hasSignature() ? 'border-success bg-success bg-opacity-10' : 'border-secondary-subtle bg-light'">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold text-dark">
+                      <i class="bi bi-pen-fill text-primary me-1"></i> Candidate Signature *
+                    </span>
+                    <span class="badge" [ngClass]="hasSignature() ? 'bg-success' : 'bg-danger'">
+                      <i class="bi" [ngClass]="hasSignature() ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                      {{ hasSignature() ? 'UPLOADED' : 'REQUIRED' }}
+                    </span>
+                  </div>
+                  <p class="small text-muted mb-2" style="font-size: 0.8rem;">
+                    Candidate signature on white paper (JPG, PNG - Max 5MB).
+                  </p>
+
+                  <div *ngIf="getDoc('SIGNATURE')" class="d-flex align-items-center justify-content-between p-2 mb-2 bg-white rounded border">
+                    <div class="d-flex align-items-center gap-2 text-truncate me-2">
+                      <i class="bi bi-pen text-success fs-5"></i>
+                      <div class="text-truncate">
+                        <div class="small fw-bold text-truncate">{{ getDoc('SIGNATURE')?.fileName }}</div>
+                        <span class="text-muted" style="font-size: 0.72rem;">{{ (getDoc('SIGNATURE')?.fileSize / 1024) | number:'1.0-1' }} KB &bull; candidate-media</span>
+                      </div>
+                    </div>
+                    <a [href]="api.getFileUrl(getDoc('SIGNATURE')?.filePath)" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.75rem;">
+                      <i class="bi bi-eye"></i> View
+                    </a>
+                  </div>
+
+                  <div class="input-group input-group-sm mt-auto">
+                    <input type="file" class="form-control" accept="image/png, image/jpeg, image/jpg" (change)="onSignatureFileSelected($event)">
+                    <button class="btn btn-iem-primary fw-bold" type="button" (click)="uploadSignature()" [disabled]="uploadingSignature() || !signatureFile">
+                      <span class="spinner-border spinner-border-sm me-1" *ngIf="uploadingSignature()"></span>
+                      <i class="bi bi-upload me-1" *ngIf="!uploadingSignature()"></i>Upload Signature
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: ACADEMIC & VERIFICATION DOCUMENTS -->
           <div class="row g-4 mb-4">
             <div class="col-lg-5">
               <div class="p-3 bg-light rounded-3 border">
-                <h6 class="fw-bold text-dark mb-3">Upload Admission Document</h6>
+                <h6 class="fw-bold text-dark mb-3">Upload Academic / Proof Document</h6>
                 
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Select Document Category *</label>
                   <select class="form-select" [(ngModel)]="uploadDocType">
                     <option value="MARKSHEET_10">Class 10th Secondary Marksheet (PDF) *</option>
                     <option value="MARKSHEET_12">Class 12th Higher Secondary Marksheet (PDF) *</option>
-                    <option value="PHOTO">Recent Passport Size Photograph (JPG/PNG) *</option>
                     <option value="PHOTO_ID">Government Photo ID (Aadhaar / Passport / Voter ID) *</option>
-                    <option value="SIGNATURE">Candidate Signature (JPG/PNG) *</option>
-                    <option value="IDENTITY_PROOF">Identity Proof (Alternative)</option>
-                    <option value="PHOTO_SIGNATURE">Combined Photo & Signature (Alternative)</option>
+                    <option value="OTHER_CERTIFICATE">Other Supporting Certificate (Optional)</option>
                   </select>
                 </div>
 
@@ -178,7 +262,7 @@ import { FirebaseService } from '../../services/firebase.service';
             </div>
 
             <div class="col-lg-7">
-              <h6 class="fw-bold text-dark mb-3">Uploaded Documents for Application {{ activeAppId() }}</h6>
+              <h6 class="fw-bold text-dark mb-3">All Uploaded Documents for Application {{ activeAppId() }}</h6>
               <div class="table-responsive" *ngIf="uploadedDocs().length > 0; else noDocsTable">
                 <table class="table table-sm table-bordered align-middle">
                   <thead class="table-light small">
@@ -195,7 +279,7 @@ import { FirebaseService } from '../../services/firebase.service';
                       <td><span class="badge bg-secondary font-monospace">{{ d.docType }}</span></td>
                       <td class="small fw-semibold">{{ d.fileName }}</td>
                       <td class="small text-muted">{{ (d.fileSize / 1024) | number:'1.1-1' }} KB</td>
-                      <td class="small text-muted font-monospace" style="font-size: 0.72rem;">gs://iem-bucket/{{ d.docType }}</td>
+                      <td class="small text-muted font-monospace" style="font-size: 0.72rem;">gs://iem-admission-404bn.firebasestorage.app</td>
                       <td>
                         <a [href]="api.getFileUrl(d.filePath)" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.72rem;">
                           <i class="bi bi-eye"></i> View
@@ -208,7 +292,7 @@ import { FirebaseService } from '../../services/firebase.service';
               <ng-template #noDocsTable>
                 <div class="alert alert-light border text-center py-4 text-muted small">
                   <i class="bi bi-file-earmark-arrow-up fs-3 d-block mb-1"></i>
-                  No documents uploaded to the bucket yet. Upload at least your 10th and 12th marksheets to fulfill application readiness.
+                  No documents uploaded to the bucket yet.
                 </div>
               </ng-template>
             </div>
@@ -448,6 +532,10 @@ export class ApplyComponent implements OnInit {
   uploadedDocs = signal<any[]>([]);
   uploadDocType = 'MARKSHEET_10';
   selectedFile: File | null = null;
+  photoFile: File | null = null;
+  signatureFile: File | null = null;
+  uploadingPhoto = signal<boolean>(false);
+  uploadingSignature = signal<boolean>(false);
 
   paymentMethod = 'UPI';
   simulateFailure = false;
@@ -580,6 +668,84 @@ export class ApplyComponent implements OnInit {
     });
   }
 
+  onPhotoFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.photoFile = file;
+    }
+  }
+
+  onSignatureFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.signatureFile = file;
+    }
+  }
+
+  uploadPhoto(): void {
+    if (!this.photoFile || !this.activeAppId()) return;
+    this.uploadingPhoto.set(true);
+    this.errorMessage.set(null);
+
+    const formData = new FormData();
+    formData.append('document', this.photoFile);
+    formData.append('applicationId', this.activeAppId());
+    formData.append('docType', 'PHOTO');
+
+    this.api.uploadDocument(formData).subscribe({
+      next: (res) => {
+        this.uploadingPhoto.set(false);
+        this.photoFile = null;
+        this.successMessage.set('Passport Photograph uploaded successfully to candidate-media.');
+        this.loadApplicationDocs(this.activeAppId());
+        setTimeout(() => this.successMessage.set(null), 3000);
+      },
+      error: (err) => {
+        this.uploadingPhoto.set(false);
+        this.errorMessage.set(err.error?.message || 'Failed to upload photo.');
+      }
+    });
+  }
+
+  uploadSignature(): void {
+    if (!this.signatureFile || !this.activeAppId()) return;
+    this.uploadingSignature.set(true);
+    this.errorMessage.set(null);
+
+    const formData = new FormData();
+    formData.append('document', this.signatureFile);
+    formData.append('applicationId', this.activeAppId());
+    formData.append('docType', 'SIGNATURE');
+
+    this.api.uploadDocument(formData).subscribe({
+      next: (res) => {
+        this.uploadingSignature.set(false);
+        this.signatureFile = null;
+        this.successMessage.set('Candidate Signature uploaded successfully to candidate-media.');
+        this.loadApplicationDocs(this.activeAppId());
+        setTimeout(() => this.successMessage.set(null), 3000);
+      },
+      error: (err) => {
+        this.uploadingSignature.set(false);
+        this.errorMessage.set(err.error?.message || 'Failed to upload signature.');
+      }
+    });
+  }
+
+  getDoc(type: string): any {
+    const docs = this.uploadedDocs();
+    if (type === 'PHOTO') {
+      return docs.find((d: any) => ['PHOTO', 'PASSPORT_PHOTO'].includes(d.docType));
+    }
+    if (type === 'SIGNATURE') {
+      return docs.find((d: any) => ['SIGNATURE', 'CANDIDATE_SIGNATURE'].includes(d.docType));
+    }
+    if (type === 'PHOTO_ID') {
+      return docs.find((d: any) => ['PHOTO_ID', 'IDENTITY_PROOF'].includes(d.docType));
+    }
+    return docs.find((d: any) => d.docType === type);
+  }
+
   hasDocType(type: string): boolean {
     return this.uploadedDocs().some((d: any) => d.docType === type);
   }
@@ -593,7 +759,7 @@ export class ApplyComponent implements OnInit {
   }
 
   hasPhoto(): boolean {
-    return this.uploadedDocs().some((d: any) => ['PHOTO', 'PASSPORT_PHOTO', 'PHOTO_SIGNATURE'].includes(d.docType));
+    return this.uploadedDocs().some((d: any) => ['PHOTO', 'PASSPORT_PHOTO'].includes(d.docType));
   }
 
   hasPhotoId(): boolean {
@@ -601,7 +767,7 @@ export class ApplyComponent implements OnInit {
   }
 
   hasSignature(): boolean {
-    return this.uploadedDocs().some((d: any) => ['SIGNATURE', 'CANDIDATE_SIGNATURE', 'PHOTO_SIGNATURE'].includes(d.docType));
+    return this.uploadedDocs().some((d: any) => ['SIGNATURE', 'CANDIDATE_SIGNATURE'].includes(d.docType));
   }
 
   hasRequiredDocs(): boolean {
