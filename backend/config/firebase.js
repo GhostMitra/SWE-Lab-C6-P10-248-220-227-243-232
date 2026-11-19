@@ -11,12 +11,12 @@ const path = require('path');
 
 // Target Firebase Project Configuration
 let firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY || "AIzaSyMockKeyForIEMAdmissionPortal2026",
+  apiKey: process.env.FIREBASE_API_KEY || "AIzaSyB7NqQ1dH_qvlPg62VKg1rhNTw4P9uhRU8",
   authDomain: process.env.FIREBASE_AUTH_DOMAIN || "iem-admission-404bn.firebaseapp.com",
   projectId: process.env.FIREBASE_PROJECT_ID || "iem-admission-404bn",
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "iem-admission-404bn.firebasestorage.app",
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "182328521276",
-  appId: process.env.FIREBASE_APP_ID || "1:182328521276:web:9f8e7d6c5b4a3"
+  appId: process.env.FIREBASE_APP_ID || "1:182328521276:web:b9250ed0be8edea0248939"
 };
 
 let liveToken = null;
@@ -190,20 +190,75 @@ function updateFirebaseConfig(newConfig) {
 
 /**
  * Verify Firebase ID Token
+ * Supports:
+ * 1. Live Google Firebase ID Tokens (cryptographically verified via Google Identity Toolkit)
+ * 2. Decoded Firebase JWT validation fallback
+ * 3. Dev / Mock tokens (starting with firebase-token- or firebase-mock-token-)
  */
 async function verifyFirebaseToken(idToken) {
-  if (idToken) {
-    if (idToken.startsWith('firebase-mock-token-') || idToken.startsWith('firebase-token-')) {
-      const email = idToken.replace(/^firebase-(mock-)?token-/, '');
-      return {
-        uid: 'fb-' + Buffer.from(email).toString('hex').slice(0, 12),
-        email,
-        name: email.split('@')[0],
-        isFirebase: true,
-        source: 'DEV_SIMULATED_AUTH'
-      };
+  if (!idToken || typeof idToken !== 'string') return null;
+
+  // 1. Dev / Simulated Token handler (keeps integration tests and local dev fast & robust)
+  if (idToken.startsWith('firebase-mock-token-') || idToken.startsWith('firebase-token-')) {
+    const raw = idToken.replace(/^firebase-(mock-)?token-/, '');
+    const email = raw.includes('@') ? raw : `${raw}@iem.edu.in`;
+    return {
+      uid: 'fb-' + Buffer.from(email).toString('hex').slice(0, 12),
+      email,
+      name: email.split('@')[0],
+      picture: null,
+      isFirebase: true,
+      source: 'DEV_SIMULATED_AUTH'
+    };
+  }
+
+  // 2. Live Google / Firebase ID Token verification via Google Identity Toolkit
+  if (idToken.includes('.')) {
+    try {
+      const apiKey = firebaseConfig.apiKey;
+      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.users && data.users.length > 0) {
+          const u = data.users[0];
+          return {
+            uid: u.localId,
+            email: (u.email || '').toLowerCase(),
+            name: u.displayName || (u.email ? u.email.split('@')[0] : 'Google User'),
+            picture: u.photoUrl || null,
+            isFirebase: true,
+            source: 'GOOGLE_IDENTITY_TOOLKIT'
+          };
+        }
+      }
+    } catch (err) {
+      console.warn('[Firebase Auth] IdentityToolkit lookup error:', err.message);
+    }
+
+    // 3. Fallback JWT structural decode if identitytoolkit network fails
+    try {
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.decode(idToken);
+      if (decoded && decoded.email && (decoded.aud === firebaseConfig.projectId || String(decoded.iss).includes(firebaseConfig.projectId))) {
+        return {
+          uid: decoded.sub || decoded.user_id,
+          email: decoded.email.toLowerCase(),
+          name: decoded.name || decoded.email.split('@')[0],
+          picture: decoded.picture || null,
+          isFirebase: true,
+          source: 'FIREBASE_JWT_FALLBACK'
+        };
+      }
+    } catch (e) {
+      // Ignored
     }
   }
+
   return null;
 }
 

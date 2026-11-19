@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { initializeApp, FirebaseApp } from 'firebase/app';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as fbSignOut } from 'firebase/auth';
 import { getStorage, FirebaseStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getFirestore, Firestore, collection, doc, setDoc, getDoc, addDoc } from 'firebase/firestore';
@@ -28,12 +28,12 @@ export class FirebaseService {
   statusData = signal<any>(null);
 
   config: FirebaseConfig = {
-    apiKey: "AIzaSyMockKeyForIEMAdmissionPortal2026",
+    apiKey: "AIzaSyB7NqQ1dH_qvlPg62VKg1rhNTw4P9uhRU8",
     authDomain: "iem-admission-404bn.firebaseapp.com",
     projectId: "iem-admission-404bn",
     storageBucket: "iem-admission-404bn.firebasestorage.app",
-    messagingSenderId: "104857629384",
-    appId: "1:104857629384:web:9f8e7d6c5b4a3"
+    messagingSenderId: "182328521276",
+    appId: "1:182328521276:web:b9250ed0be8edea0248939"
   };
 
   private readonly apiBase = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '4200')
@@ -70,7 +70,7 @@ export class FirebaseService {
 
   private setupFirebaseApp(): void {
     try {
-      this.app = initializeApp(this.config, 'iem-portal');
+      this.app = getApps().length > 0 ? getApp() : initializeApp(this.config);
       this.auth = getAuth(this.app);
       this.storage = getStorage(this.app);
       this.firestore = getFirestore(this.app);
@@ -84,21 +84,36 @@ export class FirebaseService {
 
   // --- Firebase Authentication ---
   async signInGoogle(): Promise<string> {
-    if (this.auth && this.config.apiKey !== "AIzaSyMockKeyForIEMAdmissionPortal2026") {
+    if (!this.auth) {
+      this.setupFirebaseApp();
+    }
+
+    if (this.auth) {
       try {
         const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
         const cred = await signInWithPopup(this.auth, provider);
-        return await cred.user.getIdToken();
+        const token = await cred.user.getIdToken();
+        if (token) return token;
       } catch (err: any) {
-        console.warn('Live Google Sign-in cancelled or failed, falling back to simulated auth:', err.message);
+        console.warn('[Firebase Auth] Google Sign-In notice:', err);
+        if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+          throw new Error('Google Sign-In was cancelled.');
+        }
+        if (err.code === 'auth/popup-blocked') {
+          throw new Error('Popup was blocked by your browser. Please allow popups for this site and try again.');
+        }
+        if (err.code === 'auth/unauthorized-domain') {
+          throw new Error(`Domain not authorized for Firebase Auth. Please access via localhost or https://${this.config.authDomain}`);
+        }
+        throw new Error(err.message || 'Google authentication failed.');
       }
     }
-    // Development fallback token
     return `firebase-token-student_${Date.now()}@iem.edu.in`;
   }
 
   async signInEmail(email: string, pwd: string): Promise<string> {
-    if (this.auth && this.config.apiKey !== "AIzaSyMockKeyForIEMAdmissionPortal2026") {
+    if (this.auth) {
       try {
         const cred = await signInWithEmailAndPassword(this.auth, email, pwd);
         return await cred.user.getIdToken();
@@ -117,7 +132,7 @@ export class FirebaseService {
 
   // --- Firebase Cloud Storage (Direct Upload) ---
   async uploadToFirebaseStorage(file: File, subBucket: string, applicationId: string): Promise<{ publicUrl: string; bucketPath: string }> {
-    if (this.storage && this.config.apiKey !== "AIzaSyMockKeyForIEMAdmissionPortal2026") {
+    if (this.storage) {
       try {
         const fileRef = ref(this.storage, `${subBucket}/${applicationId}_${Date.now()}_${file.name}`);
         const snap = await uploadBytes(fileRef, file);
@@ -140,7 +155,7 @@ export class FirebaseService {
 
   // --- Firebase Cloud Firestore (Direct NoSQL Sync) ---
   async syncDraftToFirestore(userId: number, draftData: any): Promise<void> {
-    if (this.firestore && this.config.apiKey !== "AIzaSyMockKeyForIEMAdmissionPortal2026") {
+    if (this.firestore) {
       try {
         const draftRef = doc(this.firestore, 'application_drafts', String(userId));
         await setDoc(draftRef, { ...draftData, clientTimestamp: new Date().toISOString() }, { merge: true });

@@ -177,11 +177,23 @@ router.post('/firebase-login', async (req, res) => {
       await ApplicantModel.upsert(user.userId, {});
     }
 
+    const effectiveRole = (user.role === 'OFFICER') ? 'ADMISSION_OFFICER' : user.role;
+
     const token = jwt.sign(
-      { userId: user.userId, email: user.email, role: user.role, fullName: user.fullName, isFirebase: true },
+      { userId: user.userId, email: user.email, role: effectiveRole, fullName: user.fullName, isFirebase: true },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
+
+    // Audit log
+    await AuditModel.log({
+      actorId: user.userId,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'USER_LOGIN',
+      targetEntity: 'AUTH',
+      details: `User logged in via Google SSO / Firebase (${fbUser.source || 'FIREBASE'})`
+    });
 
     res.json({
       success: true,
@@ -191,8 +203,10 @@ router.post('/firebase-login', async (req, res) => {
         userId: user.userId,
         fullName: user.fullName,
         email: user.email,
-        role: user.role,
-        isFirebase: true
+        phone: user.phone || '',
+        role: effectiveRole,
+        isFirebase: true,
+        photoUrl: fbUser.picture || null
       }
     });
   } catch (err) {
