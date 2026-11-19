@@ -4,12 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService, Course } from '../../services/api.service';
 import { FirebaseService } from '../../services/firebase.service';
-import { DatePickerComponent } from '../common/date-picker';
 
 @Component({
   selector: 'app-apply',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePickerComponent],
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <div class="container py-4 my-2">
       
@@ -191,10 +190,14 @@ import { DatePickerComponent } from '../common/date-picker';
             </div>
 
             <div class="row g-3">
-              <!-- Date of Birth with Custom Date Picker -->
+              <!-- Date of Birth -->
               <div class="col-md-4">
                 <label for="apply-dob" class="form-label">Date of Birth *</label>
-                <app-date-picker id="apply-dob" name="dateOfBirth" [(value)]="form.dateOfBirth" [required]="true"></app-date-picker>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                  <input type="date" id="apply-dob" class="form-control" [(ngModel)]="form.dateOfBirth" name="dateOfBirth"
+                         min="1990-01-01" max="2012-12-31" required>
+                </div>
               </div>
 
               <!-- Gender -->

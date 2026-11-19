@@ -4,12 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { FirebaseService } from '../../services/firebase.service';
-import { DatePickerComponent } from '../common/date-picker';
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePickerComponent],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="container py-5 my-2">
       <div class="row justify-content-center">
@@ -140,7 +139,11 @@ import { DatePickerComponent } from '../common/date-picker';
               <div class="row g-2 mb-4">
                 <div class="col-md-6">
                   <label for="reg-dob" class="form-label">Date of Birth</label>
-                  <app-date-picker id="reg-dob" name="dob" [(value)]="regDob"></app-date-picker>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                    <input type="date" id="reg-dob" class="form-control" [(ngModel)]="regDob" name="dob"
+                           min="1990-01-01" max="2012-12-31">
+                  </div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">Account Role</label>
