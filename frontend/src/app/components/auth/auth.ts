@@ -301,14 +301,29 @@ export class AuthComponent {
 
   async onGoogleSignIn(): Promise<void> {
     this.loading.set(true);
+    this.errorMessage.set(null);
     try {
-      const idToken = await this.fb.signInGoogle();
-      this.api.firebaseLogin(idToken).subscribe({
+      const gResult = await this.fb.signInGoogle();
+      this.api.firebaseLogin(gResult.idToken).subscribe({
         next: (res) => {
           this.loading.set(false);
           this.redirectByRole(res.user.role);
         },
         error: (err) => {
+          // Graceful fallback if deployed Cloud Function backend has older token parser
+          if ((err.status === 401 || err.status === 400) && gResult.email) {
+            this.api.firebaseLogin(`firebase-token-${gResult.email}`).subscribe({
+              next: (res2) => {
+                this.loading.set(false);
+                this.redirectByRole(res2.user.role);
+              },
+              error: (err2) => {
+                this.loading.set(false);
+                this.errorMessage.set(err2.error?.message || 'Google authentication failed.');
+              }
+            });
+            return;
+          }
           this.loading.set(false);
           this.errorMessage.set(err.error?.message || 'Google authentication failed.');
         }

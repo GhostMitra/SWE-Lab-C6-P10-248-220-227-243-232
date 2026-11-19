@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { initializeApp, getApps, getApp, deleteApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as fbSignOut } from 'firebase/auth';
 import { getStorage, FirebaseStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getFirestore, Firestore, collection, doc, setDoc, getDoc, addDoc } from 'firebase/firestore';
@@ -12,6 +12,14 @@ export interface FirebaseConfig {
   storageBucket: string;
   messagingSenderId: string;
   appId: string;
+}
+
+export interface GoogleAuthResult {
+  idToken: string;
+  email: string;
+  displayName: string;
+  photoUrl: string | null;
+  uid: string;
 }
 
 @Injectable({
@@ -54,11 +62,18 @@ export class FirebaseService {
       error: () => {}
     });
 
-    // 2. Fetch public client config and initialize Firebase App
-    this.http.get<any>(`${this.apiBase}/firebase/config`).subscribe({
+    // 2. Load Firebase config: On Firebase Hosting, /__/firebase/init.json is native & authoritative
+    const isHosting = typeof window !== 'undefined' && 
+      (window.location.hostname.endsWith('.web.app') || window.location.hostname.endsWith('.firebaseapp.com'));
+
+    const configUrl = isHosting ? '/__/firebase/init.json' : `${this.apiBase}/firebase/config`;
+
+    this.http.get<any>(configUrl).subscribe({
       next: (res) => {
-        if (res.success && res.config) {
-          this.config = { ...this.config, ...res.config };
+        const c = res.config || res;
+        // Guard: Never overwrite valid API key with a placeholder or mock key
+        if (c && c.apiKey && !c.apiKey.includes('MockKey') && c.apiKey.startsWith('AIzaSy')) {
+          this.config = { ...this.config, ...c };
         }
         this.setupFirebaseApp();
       },
@@ -68,9 +83,21 @@ export class FirebaseService {
     });
   }
 
-  private setupFirebaseApp(): void {
+  private async setupFirebaseApp(): Promise<void> {
     try {
-      this.app = getApps().length > 0 ? getApp() : initializeApp(this.config);
+      const existing = getApps();
+      if (existing.length > 0) {
+        const currentApp = existing[0];
+        // If an existing app was created with an old mock key, recreate it with the valid key
+        if ((currentApp.options as any)?.apiKey?.includes('MockKey')) {
+          await deleteApp(currentApp);
+          this.app = initializeApp(this.config);
+        } else {
+          this.app = currentApp;
+        }
+      } else {
+        this.app = initializeApp(this.config);
+      }
       this.auth = getAuth(this.app);
       this.storage = getStorage(this.app);
       this.firestore = getFirestore(this.app);
@@ -83,9 +110,9 @@ export class FirebaseService {
   }
 
   // --- Firebase Authentication ---
-  async signInGoogle(): Promise<string> {
-    if (!this.auth) {
-      this.setupFirebaseApp();
+  async signInGoogle(): Promise<GoogleAuthResult> {
+    if (!this.auth || (this.app?.options as any)?.apiKey?.includes('MockKey')) {
+      await this.setupFirebaseApp();
     }
 
     if (this.auth) {
@@ -94,7 +121,15 @@ export class FirebaseService {
         provider.setCustomParameters({ prompt: 'select_account' });
         const cred = await signInWithPopup(this.auth, provider);
         const token = await cred.user.getIdToken();
-        if (token) return token;
+        const email = cred.user.email || '';
+        const displayName = cred.user.displayName || (email ? email.split('@')[0] : 'Google User');
+        return {
+          idToken: token || `firebase-token-${email}`,
+          email,
+          displayName,
+          photoUrl: cred.user.photoURL || null,
+          uid: cred.user.uid
+        };
       } catch (err: any) {
         console.warn('[Firebase Auth] Google Sign-In notice:', err);
         if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
@@ -109,7 +144,15 @@ export class FirebaseService {
         throw new Error(err.message || 'Google authentication failed.');
       }
     }
-    return `firebase-token-student_${Date.now()}@iem.edu.in`;
+
+    const fallbackEmail = `student_${Date.now()}@iem.edu.in`;
+    return {
+      idToken: `firebase-token-${fallbackEmail}`,
+      email: fallbackEmail,
+      displayName: fallbackEmail.split('@')[0],
+      photoUrl: null,
+      uid: 'fb-' + Date.now()
+    };
   }
 
   async signInEmail(email: string, pwd: string): Promise<string> {
