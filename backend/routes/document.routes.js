@@ -1,27 +1,85 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
+const Busboy = require('busboy');
 const { DocumentModel, ApplicationModel, AuditModel } = require('../models/sql-models');
 const { uploadToBucket } = require('../services/storage-bucket.service');
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
-// Multer in-memory storage so we can stream/save directly into our Storage Bucket
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
-  fileFilter: (req, file, cb) => {
-    const allowedMimes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file format. Allowed formats: PDF, JPEG, PNG.'));
-    }
+/**
+ * Universal Multipart Parser Middleware
+ * Supports both Google Cloud Functions (where req stream is pre-consumed into req.rawBody)
+ * and standalone local Express runtime (where req is streamed via req.pipe(busboy)).
+ */
+function handleMultipartUpload(req, res, next) {
+  const contentType = req.headers['content-type'] || '';
+  if (!contentType.includes('multipart/form-data')) {
+    return next();
   }
-});
+
+  try {
+    const busboy = Busboy({
+      headers: req.headers,
+      limits: { fileSize: 15 * 1024 * 1024 }
+    });
+
+    req.body = req.body || {};
+    const filePromises = [];
+
+    busboy.on('field', (name, val) => {
+      req.body[name] = val;
+    });
+
+    busboy.on('file', (name, stream, info) => {
+      const { filename, encoding, mimeType } = info;
+      const chunks = [];
+      const p = new Promise((resolve, reject) => {
+        stream.on('data', chunk => chunks.push(chunk));
+        stream.on('end', () => {
+          const buffer = Buffer.concat(chunks);
+          req.file = {
+            fieldname: name,
+            originalname: filename,
+            encoding,
+            mimetype: mimeType,
+            buffer,
+            size: buffer.length
+          };
+          resolve();
+        });
+        stream.on('error', reject);
+      });
+      filePromises.push(p);
+    });
+
+    busboy.on('close', async () => {
+      try {
+        await Promise.all(filePromises);
+        next();
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    busboy.on('error', err => {
+      console.error('[Multipart Error]:', err.message);
+      next(err);
+    });
+
+    if (req.rawBody) {
+      // In Google Cloud Functions / Cloud Run: req stream is pre-consumed into req.rawBody
+      busboy.end(req.rawBody);
+    } else {
+      // In standalone Express: pipe incoming stream directly
+      req.pipe(busboy);
+    }
+  } catch (err) {
+    console.error('[Busboy Init Error]:', err.message);
+    next(err);
+  }
+}
 
 // POST /api/documents/upload (FR-3, IR-3: Document Upload Interface into Storage Bucket & SQL record)
-router.post('/upload', authenticateToken, upload.single('document'), async (req, res) => {
+router.post('/upload', authenticateToken, handleMultipartUpload, async (req, res) => {
   try {
     const { applicationId, docType } = req.body;
 
@@ -52,14 +110,18 @@ router.post('/upload', authenticateToken, upload.single('document'), async (req,
       applicationId
     });
 
-    // 2. Persist metadata into the Relational SQL Documents Table
+    // 2. Persist metadata into the Documents Store
     const docRecord = await DocumentModel.create({
       applicationId,
       docType,
       fileName: req.file.originalname,
+      originalName: req.file.originalname,
       filePath: bucketFile.publicUrl,
+      publicUrl: bucketFile.publicUrl,
       fileSize: req.file.size,
-      mimeType: req.file.mimetype
+      sizeBytes: req.file.size,
+      mimeType: req.file.mimetype,
+      storagePath: bucketFile.bucketPath
     });
 
     // 3. Audit Log
@@ -69,7 +131,7 @@ router.post('/upload', authenticateToken, upload.single('document'), async (req,
       actorRole: req.user.role,
       action: 'UPLOAD_DOCUMENT',
       targetEntity: 'DOCUMENTS',
-      targetId: String(docRecord.documentId),
+      targetId: String(docRecord.docId || docRecord.documentId),
       details: `Uploaded ${docType} (${req.file.originalname}) to bucket ${bucketFile.subBucket}`
     });
 
@@ -121,7 +183,7 @@ router.put('/:documentId/verify', authenticateToken, authorizeRoles('ADMISSION_O
       action: `VERIFY_DOCUMENT_${verificationStatus}`,
       targetEntity: 'DOCUMENTS',
       targetId: String(req.params.documentId),
-      details: `Document ${req.params.documentId} set to ${verificationStatus}. Notes: ${verificationNotes || 'None'}`
+      details: `Document verification status changed to ${verificationStatus}. Notes: ${verificationNotes || 'None'}`
     });
 
     res.json({

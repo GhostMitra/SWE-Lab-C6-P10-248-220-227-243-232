@@ -160,7 +160,7 @@ import { ApiService, Application } from '../../services/api.service';
                       <small class="d-block text-muted" *ngIf="doc.verificationNotes">{{ doc.verificationNotes }}</small>
                     </td>
                     <td>
-                      <a [href]="'http://localhost:5000' + doc.filePath" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.75rem;">
+                      <a [href]="api.getFileUrl(doc.filePath)" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.75rem;">
                         <i class="bi bi-eye me-1"></i>View File
                       </a>
                     </td>
@@ -193,7 +193,7 @@ import { ApiService, Application } from '../../services/api.service';
               </a>
 
               <!-- If approved -> Admit letter -->
-              <a *ngIf="app.status === 'APPROVED' || app.status === 'COMPLETED'" [href]="'http://localhost:5000/api/storage/buckets/generated-letters/Admit_Letter_' + app.applicationId + '.html'" target="_blank" class="btn btn-sm btn-success fw-bold">
+              <a *ngIf="app.status === 'APPROVED' || app.status === 'COMPLETED'" [href]="api.getFileUrl('/api/storage/buckets/generated-letters/Admit_Letter_' + app.applicationId + '.html')" target="_blank" class="btn btn-sm btn-success fw-bold">
                 <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Official Admit Letter
               </a>
             </div>

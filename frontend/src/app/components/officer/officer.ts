@@ -184,7 +184,7 @@ import { ApiService, Application } from '../../services/api.service';
                   </td>
                   <td>
                     <div class="d-flex gap-1">
-                      <a [href]="'http://localhost:5000' + doc.filePath" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.72rem;">
+                      <a [href]="api.getFileUrl(doc.filePath)" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.72rem;">
                         <i class="bi bi-eye"></i> View
                       </a>
                       <button class="btn btn-sm btn-outline-success py-0 px-2" style="font-size: 0.72rem;" (click)="verifyDoc(doc.documentId, 'VERIFIED')">

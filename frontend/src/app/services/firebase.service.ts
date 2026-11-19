@@ -36,13 +36,17 @@ export class FirebaseService {
     appId: "1:104857629384:web:9f8e7d6c5b4a3"
   };
 
+  private readonly apiBase = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '4200')
+    ? 'http://localhost:5000/api'
+    : '/api';
+
   constructor(private http: HttpClient) {
     this.initFromBackend();
   }
 
   initFromBackend(): void {
     // 1. Fetch live diagnostic status from backend
-    this.http.get<any>('http://localhost:5000/api/firebase/status').subscribe({
+    this.http.get<any>(`${this.apiBase}/firebase/status`).subscribe({
       next: (res) => {
         this.statusData.set(res);
         this.isLiveCloud.set(res.isLiveCloudSdk);
@@ -51,7 +55,7 @@ export class FirebaseService {
     });
 
     // 2. Fetch public client config and initialize Firebase App
-    this.http.get<any>('http://localhost:5000/api/firebase/config').subscribe({
+    this.http.get<any>(`${this.apiBase}/firebase/config`).subscribe({
       next: (res) => {
         if (res.success && res.config) {
           this.config = { ...this.config, ...res.config };

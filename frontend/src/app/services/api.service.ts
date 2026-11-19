@@ -69,6 +69,15 @@ export class ApiService {
   token = signal<string | null>(null);
   isAuthenticated = computed(() => !!this.currentUser());
 
+  getFileUrl(path: string | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    const prefix = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '4200')
+      ? 'http://localhost:5000'
+      : '';
+    return prefix + (path.startsWith('/') ? path : '/' + path);
+  }
+
   constructor(private http: HttpClient) {
     this.loadSession();
   }

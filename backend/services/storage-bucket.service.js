@@ -11,9 +11,14 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getAdmin, isFirebaseLive, firebaseConfig, getLiveAccessToken } = require('../config/firebase');
+const os = require('os');
+const { isFirebaseLive, firebaseConfig, getLiveAccessToken } = require('../config/firebase');
 
-const BUCKET_BASE_DIR = path.join(__dirname, '..', 'storage-bucket');
+const isServerless = !!(process.env.FUNCTION_NAME || process.env.K_SERVICE || process.env.FIREBASE_CONFIG || process.env.LAMBDA_TASK_ROOT);
+const BUCKET_BASE_DIR = isServerless 
+  ? path.join(os.tmpdir(), 'iem-storage-bucket') 
+  : path.join(__dirname, '..', 'storage-bucket');
+
 const BUCKET_NAME = firebaseConfig.storageBucket || 'iem-admission-404bn.firebasestorage.app';
 
 const SUB_BUCKETS = {
@@ -23,40 +28,90 @@ const SUB_BUCKETS = {
   GENERATED_LETTERS: 'generated-letters'
 };
 
-// Ensure all bucket directories exist
-Object.values(SUB_BUCKETS).forEach(folder => {
-  const dir = path.join(BUCKET_BASE_DIR, folder);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+// Ensure all bucket directories exist safely (never throw on read-only environments)
+try {
+  Object.values(SUB_BUCKETS).forEach(folder => {
+    const dir = path.join(BUCKET_BASE_DIR, folder);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  });
+} catch (e) {
+  console.warn('[Storage Bucket] Directory pre-creation notice:', e.message);
+}
+
+// Lazy-initialized Firebase Admin Storage Bucket reference
+let adminStorageBucket = null;
+
+function getStorageBucket() {
+  if (adminStorageBucket) return adminStorageBucket;
+  try {
+    const admin = require('firebase-admin');
+    const existingApps = admin.getApps ? admin.getApps() : (admin.apps || []);
+    if (!existingApps.length) {
+      admin.initializeApp({
+        projectId: firebaseConfig.projectId,
+        storageBucket: BUCKET_NAME
+      });
+    }
+    const { getStorage } = require('firebase-admin/storage');
+    adminStorageBucket = getStorage().bucket(BUCKET_NAME);
+    return adminStorageBucket;
+  } catch (err) {
+    console.warn('[Storage Bucket] Firebase Admin Storage init notice:', err.message);
+    return null;
   }
-});
+}
 
 /**
  * Direct Live Cloud Storage Upload Helper
+ * Uses Firebase Admin Storage (Application Default Credentials in Cloud Functions)
+ * with REST API fallback for local development.
  */
 async function uploadToLiveCloudBucket(objectPath, buffer, contentType) {
+  // 1. Primary: Firebase Admin SDK (Cloud Functions native service account)
+  try {
+    const bucket = getStorageBucket();
+    if (bucket) {
+      const file = bucket.file(objectPath);
+      await file.save(buffer, {
+        contentType: contentType || 'application/octet-stream',
+        resumable: false,
+        metadata: {
+          contentType: contentType || 'application/octet-stream'
+        }
+      });
+      console.log(`[Storage Bucket] Synced ${objectPath} via Admin SDK to gs://${BUCKET_NAME}/${objectPath}`);
+      return { bucket: BUCKET_NAME, object: objectPath };
+    }
+  } catch (adminErr) {
+    console.warn(`[Storage Bucket] Admin SDK upload notice for ${objectPath}:`, adminErr.message);
+  }
+
+  // 2. Secondary: CLI Access Token via REST
   try {
     const token = getLiveAccessToken();
-    if (!token) return null;
+    if (token) {
+      const uploadUrl = `https://storage.googleapis.com/upload/storage/v1/b/${BUCKET_NAME}/o?uploadType=media&name=${encodeURIComponent(objectPath)}`;
+      const res = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': contentType || 'application/octet-stream'
+        },
+        body: buffer
+      });
 
-    const uploadUrl = `https://storage.googleapis.com/upload/storage/v1/b/${BUCKET_NAME}/o?uploadType=media&name=${encodeURIComponent(objectPath)}`;
-    const res = await fetch(uploadUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': contentType || 'application/octet-stream'
-      },
-      body: buffer
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      console.log(`[Storage Bucket] Synced ${objectPath} to live Cloud Storage bucket: gs://${BUCKET_NAME}/${objectPath}`);
-      return data;
+      if (res.ok) {
+        const data = await res.json();
+        console.log(`[Storage Bucket] Synced ${objectPath} via REST to gs://${BUCKET_NAME}/${objectPath}`);
+        return data;
+      }
     }
   } catch (err) {
-    console.warn(`[Storage Bucket] Cloud sync for ${objectPath} notice:`, err.message);
+    console.warn(`[Storage Bucket] REST upload notice for ${objectPath}:`, err.message);
   }
+
   return null;
 }
 
@@ -87,16 +142,25 @@ async function uploadToBucket({ buffer, originalname, mimetype, docType, applica
   const ext = path.extname(originalname) || '.pdf';
   const cleanName = path.basename(originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
   const filename = `${applicationId || 'general'}_${docType}_${Date.now()}${ext}`;
+  const objectPath = `${subBucket}/${filename}`;
   const localDest = path.join(BUCKET_BASE_DIR, subBucket, filename);
 
-  // Write to local bucket directory
-  fs.writeFileSync(localDest, buffer);
+  // Write to local / tmp bucket directory safely
+  try {
+    const dir = path.dirname(localDest);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(localDest, buffer);
+  } catch (fsErr) {
+    console.warn('[Storage Bucket] Local fs write notice:', fsErr.message);
+  }
+
+  // Upload to live Cloud Storage bucket
+  await uploadToLiveCloudBucket(objectPath, buffer, mimetype);
 
   const bucketPath = `gs://${BUCKET_NAME}/${subBucket}/${filename}`;
   const publicUrl = `/api/storage/buckets/${subBucket}/${filename}`;
-
-  // Sync to live Google Cloud Storage bucket
-  uploadToLiveCloudBucket(`${subBucket}/${filename}`, buffer, mimetype).catch(() => {});
 
   return {
     bucketName: BUCKET_NAME,
@@ -118,6 +182,7 @@ async function uploadToBucket({ buffer, originalname, mimetype, docType, applica
 function generateAdmissionLetter({ application, user, course, payment }) {
   const subBucket = SUB_BUCKETS.GENERATED_LETTERS;
   const filename = `Admit_Letter_${application.applicationId}.html`;
+  const objectPath = `${subBucket}/${filename}`;
   const localDest = path.join(BUCKET_BASE_DIR, subBucket, filename);
 
   const htmlContent = `<!DOCTYPE html>
@@ -182,10 +247,18 @@ function generateAdmissionLetter({ application, user, course, payment }) {
 </body>
 </html>`;
 
-  fs.writeFileSync(localDest, htmlContent, 'utf8');
+  try {
+    const dir = path.dirname(localDest);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(localDest, htmlContent, 'utf8');
+  } catch (fsErr) {
+    console.warn('[Storage Bucket] Local letter cache write notice:', fsErr.message);
+  }
 
   // Sync admit letter to live Google Cloud Storage bucket
-  uploadToLiveCloudBucket(`${subBucket}/${filename}`, Buffer.from(htmlContent, 'utf8'), 'text/html').catch(() => {});
+  uploadToLiveCloudBucket(objectPath, Buffer.from(htmlContent, 'utf8'), 'text/html').catch(() => {});
 
   return {
     bucketName: BUCKET_NAME,
@@ -197,28 +270,57 @@ function generateAdmissionLetter({ application, user, course, payment }) {
 }
 
 /**
- * List files stored in a specific bucket
+ * List files stored in a specific bucket (supports live Cloud Storage & local fallback)
  */
-function listBucketFiles(subBucket = null) {
+async function listBucketFiles(subBucket = null) {
+  // 1. Try Cloud Storage listing
+  try {
+    const bucket = getStorageBucket();
+    if (bucket) {
+      const prefix = subBucket ? `${subBucket}/` : '';
+      const [files] = await bucket.getFiles({ prefix });
+      if (files && files.length > 0) {
+        return files.map(file => {
+          const parts = file.name.split('/');
+          const b = parts[0];
+          const f = parts.slice(1).join('/');
+          return {
+            bucket: b,
+            filename: f,
+            sizeBytes: Number(file.metadata.size || 0),
+            lastModified: file.metadata.updated || file.metadata.timeCreated || new Date().toISOString(),
+            bucketUri: `gs://${BUCKET_NAME}/${file.name}`,
+            downloadUrl: `/api/storage/buckets/${b}/${f}`
+          };
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('[Storage Bucket] Cloud Storage listFiles notice:', e.message);
+  }
+
+  // 2. Fallback to local / tmp cache
   const result = [];
   const bucketsToScan = subBucket ? [subBucket] : Object.values(SUB_BUCKETS);
 
   bucketsToScan.forEach(b => {
     const dir = path.join(BUCKET_BASE_DIR, b);
     if (fs.existsSync(dir)) {
-      const files = fs.readdirSync(dir);
-      files.forEach(f => {
-        const fullPath = path.join(dir, f);
-        const stat = fs.statSync(fullPath);
-        result.push({
-          bucket: b,
-          filename: f,
-          sizeBytes: stat.size,
-          lastModified: stat.mtime.toISOString(),
-          bucketUri: `gs://${BUCKET_NAME}/${b}/${f}`,
-          downloadUrl: `/api/storage/buckets/${b}/${f}`
+      try {
+        const files = fs.readdirSync(dir);
+        files.forEach(f => {
+          const fullPath = path.join(dir, f);
+          const stat = fs.statSync(fullPath);
+          result.push({
+            bucket: b,
+            filename: f,
+            sizeBytes: stat.size,
+            lastModified: stat.mtime.toISOString(),
+            bucketUri: `gs://${BUCKET_NAME}/${b}/${f}`,
+            downloadUrl: `/api/storage/buckets/${b}/${f}`
+          });
         });
-      });
+      } catch (e) {}
     }
   });
 
@@ -241,13 +343,15 @@ function getBucketStats() {
     let count = 0;
     let size = 0;
     if (fs.existsSync(dir)) {
-      const files = fs.readdirSync(dir);
-      count = files.length;
-      files.forEach(f => {
-        try {
-          size += fs.statSync(path.join(dir, f)).size;
-        } catch (e) {}
-      });
+      try {
+        const files = fs.readdirSync(dir);
+        count = files.length;
+        files.forEach(f => {
+          try {
+            size += fs.statSync(path.join(dir, f)).size;
+          } catch (e) {}
+        });
+      } catch (e) {}
     }
     stats.subBuckets[b] = { count, sizeBytes: size };
     stats.totalObjects += count;
@@ -260,7 +364,9 @@ function getBucketStats() {
 module.exports = {
   BUCKET_NAME,
   SUB_BUCKETS,
+  getStorageBucket,
   uploadToBucket,
+  uploadToLiveCloudBucket,
   generateAdmissionLetter,
   listBucketFiles,
   getBucketStats,

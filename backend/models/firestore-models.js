@@ -346,17 +346,24 @@ Object.values(collections.documents).forEach(d => {
 });
 
 const DocumentModel = {
-  async create({ applicationId, docType, originalName, mimeType, sizeBytes, storagePath, publicUrl }) {
+  async create({ applicationId, docType, originalName, fileName, mimeType, sizeBytes, fileSize, storagePath, filePath, publicUrl }) {
     const docId = nextDocId++;
+    const resolvedName = originalName || fileName || 'document.pdf';
+    const resolvedUrl = publicUrl || filePath || `/api/storage/buckets/academic-docs/doc_${docId}.pdf`;
+    const resolvedSize = Number(sizeBytes || fileSize) || 0;
     const docItem = {
       docId,
+      documentId: docId,
       applicationId,
       docType,
-      originalName,
-      mimeType,
-      sizeBytes: Number(sizeBytes) || 0,
-      storagePath,
-      publicUrl,
+      originalName: resolvedName,
+      fileName: resolvedName,
+      mimeType: mimeType || 'application/pdf',
+      sizeBytes: resolvedSize,
+      fileSize: resolvedSize,
+      storagePath: storagePath || '',
+      filePath: resolvedUrl,
+      publicUrl: resolvedUrl,
       verificationStatus: 'PENDING', // PENDING | VERIFIED | REJECTED
       verificationRemarks: '',
       uploadedAt: new Date().toISOString()
@@ -371,7 +378,14 @@ const DocumentModel = {
 
   async findByApplicationId(applicationId) {
     return Object.values(collections.documents)
-      .filter(d => d.applicationId === applicationId);
+      .filter(d => d.applicationId === applicationId)
+      .map(d => ({
+        ...d,
+        documentId: d.documentId || d.docId,
+        fileName: d.fileName || d.originalName,
+        filePath: d.filePath || d.publicUrl,
+        fileSize: d.fileSize || d.sizeBytes
+      }));
   },
 
   async updateVerification(docId, status, remarks = '') {

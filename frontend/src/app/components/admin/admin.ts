@@ -205,7 +205,7 @@ import { ApiService } from '../../services/api.service';
                   <td class="small text-muted">{{ (file.sizeBytes / 1024) | number:'1.1-1' }} KB</td>
                   <td class="small text-muted font-monospace" style="font-size: 0.72rem;">{{ file.bucketUri }}</td>
                   <td>
-                    <a [href]="'http://localhost:5000' + file.downloadUrl" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.72rem;">
+                    <a [href]="api.getFileUrl(file.downloadUrl)" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.72rem;">
                       <i class="bi bi-box-arrow-up-right me-1"></i>Download / View
                     </a>
                   </td>
