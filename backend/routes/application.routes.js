@@ -46,8 +46,33 @@ router.post('/', authenticateToken, authorizeRoles('APPLICANT'), async (req, res
       twelfthStream
     } = req.body;
 
-    if (!courseId) {
-      return res.status(400).json({ success: false, message: 'Please select a course / program.' });
+    const requiredFields = [
+      { key: 'courseId', label: 'Target Course / Program' },
+      { key: 'dateOfBirth', label: 'Date of Birth' },
+      { key: 'gender', label: 'Gender' },
+      { key: 'guardianName', label: 'Guardian / Father Name' },
+      { key: 'guardianPhone', label: 'Guardian Mobile' },
+      { key: 'address', label: 'Residential Address' },
+      { key: 'tenthBoard', label: 'Class 10 Board' },
+      { key: 'tenthYear', label: 'Class 10 Year' },
+      { key: 'tenthPercentage', label: 'Class 10 Percentage' },
+      { key: 'twelfthBoard', label: 'Class 12 Board' },
+      { key: 'twelfthYear', label: 'Class 12 Year' },
+      { key: 'twelfthPercentage', label: 'Class 12 Percentage' },
+      { key: 'twelfthStream', label: 'Class 12 Stream' }
+    ];
+
+    const missing = requiredFields.filter(f => {
+      const val = req.body[f.key];
+      return val === undefined || val === null || String(val).trim() === '';
+    });
+
+    if (missing.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `All application form fields are required. Please fill in: ${missing.map(m => m.label).join(', ')}.`,
+        missingFields: missing.map(m => m.key)
+      });
     }
 
     const course = await CourseModel.findById(courseId);
@@ -82,7 +107,19 @@ router.post('/', authenticateToken, authorizeRoles('APPLICANT'), async (req, res
       courseId,
       status: 'SUBMITTED',
       marks10th: parseFloat(tenthPercentage) || 0,
-      marks12th: parseFloat(twelfthPercentage) || 0
+      marks12th: parseFloat(twelfthPercentage) || 0,
+      tenthPercentage: parseFloat(tenthPercentage) || 0,
+      twelfthPercentage: parseFloat(twelfthPercentage) || 0,
+      tenthBoard,
+      tenthYear: parseInt(tenthYear, 10) || null,
+      twelfthBoard,
+      twelfthYear: parseInt(twelfthYear, 10) || null,
+      twelfthStream,
+      guardianName,
+      guardianPhone,
+      address,
+      gender,
+      dateOfBirth
     });
 
     // Clean up draft in Firebase Firestore

@@ -83,8 +83,8 @@ import { FirebaseService } from '../../services/firebase.service';
                 <input type="text" class="form-control" [(ngModel)]="form.guardianName" name="guardianName" placeholder="e.g. Subhas Mitra" required>
               </div>
               <div class="col-md-4">
-                <label class="form-label small fw-bold">Guardian Mobile</label>
-                <input type="tel" class="form-control" [(ngModel)]="form.guardianPhone" name="guardianPhone" placeholder="9831122334">
+                <label class="form-label small fw-bold">Guardian Mobile *</label>
+                <input type="tel" class="form-control" [(ngModel)]="form.guardianPhone" name="guardianPhone" placeholder="9831122334" required>
               </div>
               <div class="col-md-8">
                 <label class="form-label small fw-bold">Residential Address *</label>
@@ -99,24 +99,24 @@ import { FirebaseService } from '../../services/firebase.service';
                 <input type="text" class="form-control" [(ngModel)]="form.tenthBoard" name="tenthBoard" placeholder="CBSE / ICSE / State" required>
               </div>
               <div class="col-md-3">
-                <label class="form-label small fw-bold">Class 10 Year</label>
-                <input type="number" class="form-control" [(ngModel)]="form.tenthYear" name="tenthYear" placeholder="2022">
+                <label class="form-label small fw-bold">Class 10 Year of Passing *</label>
+                <input type="number" class="form-control" [(ngModel)]="form.tenthYear" name="tenthYear" placeholder="2022" required>
               </div>
               <div class="col-md-3">
                 <label class="form-label small fw-bold">Class 10 Percentage *</label>
                 <input type="number" step="0.01" class="form-control" [(ngModel)]="form.tenthPercentage" name="tenthPercentage" placeholder="e.g. 91.5" required>
               </div>
               <div class="col-md-3">
-                <label class="form-label small fw-bold">12th Stream</label>
-                <input type="text" class="form-control" [(ngModel)]="form.twelfthStream" name="twelfthStream" placeholder="Science (PCM)">
+                <label class="form-label small fw-bold">Class 12 Stream *</label>
+                <input type="text" class="form-control" [(ngModel)]="form.twelfthStream" name="twelfthStream" placeholder="Science (PCM)" required>
               </div>
               <div class="col-md-4">
                 <label class="form-label small fw-bold">Class 12 Board *</label>
                 <input type="text" class="form-control" [(ngModel)]="form.twelfthBoard" name="twelfthBoard" placeholder="CBSE / ISC / State" required>
               </div>
               <div class="col-md-4">
-                <label class="form-label small fw-bold">Class 12 Year</label>
-                <input type="number" class="form-control" [(ngModel)]="form.twelfthYear" name="twelfthYear" placeholder="2024">
+                <label class="form-label small fw-bold">Class 12 Year of Passing *</label>
+                <input type="number" class="form-control" [(ngModel)]="form.twelfthYear" name="twelfthYear" placeholder="2024" required>
               </div>
               <div class="col-md-4">
                 <label class="form-label small fw-bold">Class 12 Percentage *</label>
@@ -618,6 +618,26 @@ export class ApplyComponent implements OnInit {
   }
 
   onSubmitStep1(): void {
+    const missing: string[] = [];
+    if (!this.form.courseId) missing.push('Target Course / Program');
+    if (!this.form.dateOfBirth) missing.push('Date of Birth');
+    if (!this.form.gender) missing.push('Gender');
+    if (!this.form.guardianName || !String(this.form.guardianName).trim()) missing.push('Guardian / Father Name');
+    if (!this.form.guardianPhone || !String(this.form.guardianPhone).trim()) missing.push('Guardian Mobile');
+    if (!this.form.address || !String(this.form.address).trim()) missing.push('Residential Address');
+    if (!this.form.tenthBoard || !String(this.form.tenthBoard).trim()) missing.push('Class 10 Board');
+    if (!this.form.tenthYear || isNaN(Number(this.form.tenthYear))) missing.push('Class 10 Year of Passing');
+    if (this.form.tenthPercentage === null || this.form.tenthPercentage === undefined || this.form.tenthPercentage === '' || isNaN(Number(this.form.tenthPercentage))) missing.push('Class 10 Percentage');
+    if (!this.form.twelfthBoard || !String(this.form.twelfthBoard).trim()) missing.push('Class 12 Board');
+    if (!this.form.twelfthYear || isNaN(Number(this.form.twelfthYear))) missing.push('Class 12 Year of Passing');
+    if (this.form.twelfthPercentage === null || this.form.twelfthPercentage === undefined || this.form.twelfthPercentage === '' || isNaN(Number(this.form.twelfthPercentage))) missing.push('Class 12 Percentage');
+    if (!this.form.twelfthStream || !String(this.form.twelfthStream).trim()) missing.push('Class 12 Stream');
+
+    if (missing.length > 0) {
+      this.errorMessage.set(`All application form fields are required. Please fill in: ${missing.join(', ')}.`);
+      return;
+    }
+
     this.loading.set(true);
     this.errorMessage.set(null);
 

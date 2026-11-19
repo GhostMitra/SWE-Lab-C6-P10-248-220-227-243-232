@@ -29,15 +29,22 @@ function validateApplicationReadiness(formComplete, documentsUploaded, feePaid) 
  * Validates whether an application has met all 3 prerequisites in the database
  */
 async function checkApplicationReadiness(application) {
-  // 1. Check form complete (applicant record has personal and academic marks)
+  // 1. Check form complete (applicant record has all personal, guardian, and academic fields)
   const applicant = await ApplicantModel.findByUserId(application.userId);
   const formComplete = Boolean(
     applicant &&
     applicant.dateOfBirth &&
     applicant.gender &&
     applicant.address &&
+    applicant.guardianName &&
+    applicant.guardianPhone &&
+    applicant.tenthBoard &&
+    applicant.tenthYear &&
     applicant.tenthPercentage &&
-    applicant.twelfthPercentage
+    applicant.twelfthBoard &&
+    applicant.twelfthYear &&
+    applicant.twelfthPercentage &&
+    applicant.twelfthStream
   );
 
   // 2. Check documents uploaded (Mandatory: 10th marksheet, 12th marksheet, photo, photo ID, and signature)

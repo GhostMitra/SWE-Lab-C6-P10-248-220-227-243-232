@@ -102,10 +102,13 @@ async function runTests(port = 5089) {
       gender: 'Male',
       address: 'Kolkata Sector V',
       guardianName: 'A. Jana',
+      guardianPhone: '9876543210',
       tenthPercentage: 89.5,
       tenthBoard: 'CBSE',
+      tenthYear: 2022,
       twelfthPercentage: 91.0,
       twelfthBoard: 'CBSE',
+      twelfthYear: 2024,
       twelfthStream: 'Science'
     });
     const appId = appRes.data.applicationId;
