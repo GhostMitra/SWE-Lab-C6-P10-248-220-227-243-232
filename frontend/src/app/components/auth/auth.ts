@@ -119,11 +119,8 @@ import { FirebaseService } from '../../services/firebase.service';
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">Account Role</label>
-                  <select class="form-select" [(ngModel)]="regRole" name="role">
-                    <option value="APPLICANT">Applicant / Student</option>
-                    <option value="ADMISSION_OFFICER">Admission Officer</option>
-                    <option value="ADMINISTRATOR">Administrator</option>
-                  </select>
+                  <input type="text" class="form-control bg-light text-muted" value="Student / Applicant" readonly disabled>
+                  <small class="text-muted d-block mt-1" style="font-size: 0.72rem;">Staff accounts (Officers & Admins) are provisioned by IEM.</small>
                 </div>
               </div>
 
@@ -226,7 +223,7 @@ export class AuthComponent {
       phone: this.regPhone,
       password: this.regPassword,
       dateOfBirth: this.regDob,
-      role: this.regRole
+      role: 'APPLICANT'
     }).subscribe({
       next: (res) => {
         this.loading.set(false);

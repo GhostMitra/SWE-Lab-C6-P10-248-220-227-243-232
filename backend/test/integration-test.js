@@ -38,7 +38,25 @@ async function runTests(port = 5089) {
 
   try {
     // TC-S01: Registration
-    console.log('[TEST TC-S01] Applicant Registration...');
+    console.log('[TEST TC-S01] Applicant Registration & Role Restriction Verification...');
+    // Attempt Admin registration (Must be rejected with 403 Forbidden)
+    const adminRegRes = await request({
+      hostname: 'localhost',
+      port,
+      path: '/api/auth/register',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }, {
+      fullName: 'Illegal Admin Attempt',
+      email: `illegal_admin_${Date.now()}@iem.edu.in`,
+      password: 'Admin@123',
+      role: 'ADMINISTRATOR'
+    });
+    if (adminRegRes.status !== 403) {
+      throw new Error(`Expected 403 Forbidden for Admin registration, got ${adminRegRes.status}`);
+    }
+    console.log(`  Admin registration rejection check: Status ${adminRegRes.status} (Forbidden) -> PASS`);
+
     const regPayload = {
       fullName: 'Test Applicant Jitesh',
       email: `test_${Date.now()}@iem.edu.in`,

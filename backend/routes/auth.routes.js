@@ -16,6 +16,14 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Full name, email, and password are required.' });
     }
 
+    // Restrict public registration strictly to students / applicants
+    if (role && ['ADMINISTRATOR', 'ADMIN', 'ADMISSION_OFFICER', 'OFFICER'].includes(String(role).trim().toUpperCase())) {
+      return res.status(403).json({
+        success: false,
+        message: 'Account creation is strictly restricted to Students / Applicants. Administrator and Admission Officer accounts cannot be created via public registration.'
+      });
+    }
+
     const existingUser = await UserModel.findByEmail(email);
     if (existingUser) {
       return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
@@ -29,7 +37,7 @@ router.post('/register', async (req, res) => {
       email,
       passwordHash,
       phone,
-      role: role.toUpperCase()
+      role: 'APPLICANT'
     });
 
     // If applicant, initialize applicant profile row
