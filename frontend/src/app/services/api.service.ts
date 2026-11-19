@@ -36,12 +36,26 @@ export interface Application {
   fullName?: string;
   email?: string;
   phone?: string;
+  applicantName?: string;
+  applicantEmail?: string;
+  applicantPhone?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  address?: string;
+  guardianName?: string;
+  tenthBoard?: string;
+  tenthYear?: number | null;
+  tenthPercentage?: number;
+  marks10th?: number;
+  twelfthBoard?: string;
+  twelfthStream?: string;
+  twelfthYear?: number | null;
+  twelfthPercentage?: number;
+  marks12th?: number;
   courseCode?: string;
   courseName?: string;
   degree?: string;
   applicationFee?: number;
-  tenthPercentage?: number;
-  twelfthPercentage?: number;
   paymentStatus?: string;
   transactionId?: string;
   readiness?: {

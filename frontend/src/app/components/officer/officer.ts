@@ -73,16 +73,16 @@ import { ApiService, Application } from '../../services/api.service';
               <tr *ngFor="let a of filteredApplications()">
                 <td class="font-monospace fw-bold text-primary">{{ a.applicationId }}</td>
                 <td>
-                  <div class="fw-semibold">{{ a.fullName }}</div>
-                  <div class="text-muted" style="font-size: 0.75rem;">{{ a.email }}</div>
+                  <div class="fw-semibold">{{ a.fullName || a.applicantName || 'Applicant' }}</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">{{ a.email || a.applicantEmail }}</div>
                 </td>
                 <td>
                   <span class="badge bg-light text-dark border">{{ a.courseCode }}</span>
                   <div class="text-muted" style="font-size: 0.72rem;">{{ a.courseName }}</div>
                 </td>
                 <td>
-                  <div class="small">10th: <strong>{{ a.tenthPercentage || 'N/A' }}%</strong></div>
-                  <div class="small">12th: <strong>{{ a.twelfthPercentage || 'N/A' }}%</strong></div>
+                  <div class="small">10th: <strong>{{ a.tenthPercentage || a.marks10th || 'N/A' }}%</strong></div>
+                  <div class="small">12th: <strong>{{ a.twelfthPercentage || a.marks12th || 'N/A' }}%</strong></div>
                 </td>
                 <td>
                   <span class="badge" [ngClass]="a.paymentStatus === 'SUCCESS' ? 'bg-success' : 'bg-warning text-dark'">
@@ -127,9 +127,9 @@ import { ApiService, Application } from '../../services/api.service';
           <div class="col-md-6">
             <h6 class="fw-bold text-primary mb-2"><i class="bi bi-person-badge-fill me-1"></i> Candidate Profile</h6>
             <div class="p-3 bg-light rounded-3 border small">
-              <div class="mb-1"><strong>Name:</strong> {{ selectedDossier()?.application?.fullName }}</div>
-              <div class="mb-1"><strong>Email:</strong> {{ selectedDossier()?.application?.email }}</div>
-              <div class="mb-1"><strong>Phone:</strong> {{ selectedDossier()?.application?.phone || 'N/A' }}</div>
+              <div class="mb-1"><strong>Name:</strong> {{ selectedDossier()?.application?.fullName || selectedDossier()?.application?.applicantName || 'Applicant' }}</div>
+              <div class="mb-1"><strong>Email:</strong> {{ selectedDossier()?.application?.email || selectedDossier()?.application?.applicantEmail }}</div>
+              <div class="mb-1"><strong>Phone:</strong> {{ selectedDossier()?.application?.phone || selectedDossier()?.application?.applicantPhone || 'N/A' }}</div>
               <div class="mb-1"><strong>DOB:</strong> {{ selectedDossier()?.application?.dateOfBirth || 'N/A' }}</div>
               <div class="mb-1"><strong>Gender:</strong> {{ selectedDossier()?.application?.gender || 'N/A' }}</div>
               <div class="mb-1"><strong>Address:</strong> {{ selectedDossier()?.application?.address || 'N/A' }}</div>
@@ -142,8 +142,8 @@ import { ApiService, Application } from '../../services/api.service';
           <div class="col-md-6">
             <h6 class="fw-bold text-primary mb-2"><i class="bi bi-check2-square me-1"></i> Academic Readiness Check</h6>
             <div class="p-3 bg-light rounded-3 border small">
-              <div class="mb-1"><strong>10th Secondary:</strong> {{ selectedDossier()?.application?.tenthPercentage }}% (Board: {{ selectedDossier()?.application?.tenthBoard || 'CBSE' }})</div>
-              <div class="mb-1"><strong>12th Higher Sec.:</strong> {{ selectedDossier()?.application?.twelfthPercentage }}% (Board: {{ selectedDossier()?.application?.twelfthBoard || 'CBSE' }}, Stream: {{ selectedDossier()?.application?.twelfthStream || 'PCM' }})</div>
+              <div class="mb-1"><strong>10th Secondary:</strong> {{ selectedDossier()?.application?.tenthPercentage || selectedDossier()?.application?.marks10th || 'N/A' }}% (Board: {{ selectedDossier()?.application?.tenthBoard || 'CBSE' }})</div>
+              <div class="mb-1"><strong>12th Higher Sec.:</strong> {{ selectedDossier()?.application?.twelfthPercentage || selectedDossier()?.application?.marks12th || 'N/A' }}% (Board: {{ selectedDossier()?.application?.twelfthBoard || 'CBSE' }}, Stream: {{ selectedDossier()?.application?.twelfthStream || 'PCM' }})</div>
               <hr class="my-2">
               <div class="mb-1"><strong>Fee Payment:</strong> <span class="badge bg-success" *ngIf="selectedDossier()?.payment?.status === 'SUCCESS'">PAID (Txn: {{ selectedDossier()?.payment?.transactionId }})</span></div>
               <div class="mb-1"><strong>Readiness (Basis Path):</strong> <span class="badge" [ngClass]="selectedDossier()?.readiness?.isReady ? 'bg-success' : 'bg-warning text-dark'">{{ selectedDossier()?.readiness?.isReady ? 'READY' : 'INCOMPLETE' }}</span></div>

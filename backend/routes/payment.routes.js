@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { PaymentModel, ApplicationModel, CourseModel, NotificationModel, AuditModel, UserModel } = require('../models/sql-models');
+const { PaymentModel, ApplicationModel, CourseModel, NotificationModel, AuditModel, UserModel, DocumentModel } = require('../models/sql-models');
 const { FirestoreAuditModel } = require('../models/firestore-models');
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
@@ -29,6 +29,23 @@ router.post('/initiate', authenticateToken, authorizeRoles('APPLICANT'), async (
         success: false,
         message: 'Application fee has already been paid for this application.',
         payment: existingPayment
+      });
+    }
+
+    // Prerequisite Check: Required admission documents must be uploaded before proceeding with fee payment
+    const docs = await DocumentModel.findByApplicationId(applicationId);
+    const docTypes = (docs || []).map(d => d.docType);
+    const hasRequiredDocs = docs && docs.length > 0 && (
+      (docTypes.includes('MARKSHEET_10') && docTypes.includes('MARKSHEET_12')) ||
+      docTypes.includes('MARKSHEET_10') ||
+      docs.length >= 2
+    );
+
+    if (!docs || docs.length === 0 || !hasRequiredDocs) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment rejected: You must upload the required admission documents (Class 10th and 12th marksheets) before proceeding with payment.',
+        requiresDocuments: true
       });
     }
 

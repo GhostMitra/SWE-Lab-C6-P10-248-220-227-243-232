@@ -93,7 +93,38 @@ async function runTests(port = 5089) {
     const appId = appRes.data.applicationId;
     console.log(`  Result: Status ${appRes.status}, Application ID: ${appId} -> PASS`);
 
-    // TC-S05: Fee payment
+    // TC-S04: Enforce Document Requirement before Payment (Locked without documents)
+    console.log('\n[TEST TC-S04] Verifying Payment is Locked Without Required Documents...');
+    const blockedPay = await request({
+      hostname: 'localhost',
+      port,
+      path: '/api/payments/initiate',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+    }, { applicationId: appId, paymentMethod: 'UPI' });
+    console.log(`  Result: Status ${blockedPay.status} (Expected 400: Payment Locked Without Docs) -> PASS`);
+
+    console.log('\n[TEST TC-S04.1] Uploading Required Academic Documents to Storage Bucket...');
+    const { DocumentModel } = require('../models/sql-models');
+    await DocumentModel.create({
+      applicationId: appId,
+      docType: 'MARKSHEET_10',
+      fileName: 'class10_marksheet_test.pdf',
+      filePath: `/api/storage/buckets/academic-docs/test_10th_${appId}.pdf`,
+      fileSize: 2048,
+      mimeType: 'application/pdf'
+    });
+    await DocumentModel.create({
+      applicationId: appId,
+      docType: 'MARKSHEET_12',
+      fileName: 'class12_marksheet_test.pdf',
+      filePath: `/api/storage/buckets/academic-docs/test_12th_${appId}.pdf`,
+      fileSize: 2048,
+      mimeType: 'application/pdf'
+    });
+    console.log('  Result: Required documents (10th & 12th marksheets) uploaded successfully -> PASS');
+
+    // TC-S05: Fee payment (Now allowed because documents are present)
     console.log('\n[TEST TC-S05] Application Fee Payment via Gateway...');
     const initPay = await request({
       hostname: 'localhost',

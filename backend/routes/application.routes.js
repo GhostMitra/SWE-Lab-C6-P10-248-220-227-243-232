@@ -75,12 +75,14 @@ router.post('/', authenticateToken, authorizeRoles('APPLICANT'), async (req, res
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const applicationId = `APP-2026-${randomSuffix}`;
 
-    // Create SQL application record
+    // Create application record
     const application = await ApplicationModel.create({
       applicationId,
       userId: req.user.userId,
       courseId,
-      status: 'SUBMITTED'
+      status: 'SUBMITTED',
+      marks10th: parseFloat(tenthPercentage) || 0,
+      marks12th: parseFloat(twelfthPercentage) || 0
     });
 
     // Clean up draft in Firebase Firestore

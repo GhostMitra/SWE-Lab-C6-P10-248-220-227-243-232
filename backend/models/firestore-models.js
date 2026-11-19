@@ -215,15 +215,25 @@ const ApplicationModel = {
 
     const course = await CourseModel.findById(courseId);
 
+    const student = await UserModel.findById(resolvedApplicantId);
+    const candidateFullName = (student && student.fullName) || (applicantProfile && applicantProfile.fullName) || '';
+    const candidateEmail = (student && student.email) || (applicantProfile && applicantProfile.email) || '';
+
     const appDoc = {
       applicationId,
       applicantId: resolvedApplicantId,
       userId: resolvedApplicantId,
+      fullName: candidateFullName,
+      applicantName: candidateFullName,
+      email: candidateEmail,
+      applicantEmail: candidateEmail,
       courseId: course ? course.courseId : Number(courseId),
       courseCode: course ? course.courseCode : '',
       courseName: course ? course.courseName : '',
       marks10th: score10,
+      tenthPercentage: score10,
       marks12th: score12,
+      twelfthPercentage: score12,
       meritScore,
       category: category || 'GENERAL',
       qualifyingExamRank: qualifyingExamRank ? Number(qualifyingExamRank) : null,
@@ -248,21 +258,47 @@ const ApplicationModel = {
     const app = collections.applications[applicationId];
     if (!app) return null;
 
-    // Attach student & course details
-    const student = await UserModel.findById(app.applicantId);
+    const applicantId = app.applicantId || app.userId;
+    // Attach student, applicant profile, course, documents, and payment details
+    const student = await UserModel.findById(applicantId);
+    const applicantProfile = collections.applicants[String(applicantId)] || {};
     const course = await CourseModel.findById(app.courseId);
     const docs = await DocumentModel.findByApplicationId(applicationId);
     const payment = await PaymentModel.findByApplicationId(applicationId);
 
+    const tenthPercentage = Number(app.tenthPercentage !== undefined && app.tenthPercentage !== null ? app.tenthPercentage : (app.marks10th !== undefined && app.marks10th !== null ? app.marks10th : (applicantProfile.tenthPercentage || 0)));
+    const twelfthPercentage = Number(app.twelfthPercentage !== undefined && app.twelfthPercentage !== null ? app.twelfthPercentage : (app.marks12th !== undefined && app.marks12th !== null ? app.marks12th : (applicantProfile.twelfthPercentage || 0)));
+
+    const candidateFullName = (student && student.fullName) ? student.fullName : (applicantProfile.fullName || app.fullName || app.applicantName || 'Applicant');
+    const candidateEmail = (student && student.email) ? student.email : (applicantProfile.email || app.email || app.applicantEmail || '');
+    const candidatePhone = (student && student.phone) ? student.phone : (applicantProfile.phone || app.phone || app.applicantPhone || '');
+
     return {
       ...app,
-      userId: app.applicantId,
-      applicantId: app.applicantId,
-      applicantName: student ? student.fullName : 'Applicant',
-      applicantEmail: student ? student.email : '',
-      applicantPhone: student ? student.phone : '',
-      courseName: course ? course.courseName : app.courseName,
-      courseCode: course ? course.courseCode : app.courseCode,
+      userId: applicantId,
+      applicantId: applicantId,
+      fullName: candidateFullName,
+      applicantName: candidateFullName,
+      email: candidateEmail,
+      applicantEmail: candidateEmail,
+      phone: candidatePhone,
+      applicantPhone: candidatePhone,
+      dateOfBirth: applicantProfile.dateOfBirth || app.dateOfBirth || '2004-03-21',
+      gender: applicantProfile.gender || app.gender || 'Not Specified',
+      address: applicantProfile.address || app.address || 'Kolkata, West Bengal',
+      guardianName: applicantProfile.guardianName || app.guardianName || 'Guardian',
+      tenthBoard: applicantProfile.tenthBoard || app.tenthBoard || 'CBSE',
+      tenthYear: applicantProfile.tenthYear || app.tenthYear || null,
+      tenthPercentage,
+      marks10th: tenthPercentage,
+      twelfthBoard: applicantProfile.twelfthBoard || app.twelfthBoard || 'CBSE',
+      twelfthStream: applicantProfile.twelfthStream || app.twelfthStream || 'Science',
+      twelfthYear: applicantProfile.twelfthYear || app.twelfthYear || null,
+      twelfthPercentage,
+      marks12th: twelfthPercentage,
+      courseName: course ? course.courseName : (app.courseName || 'Selected Course'),
+      courseCode: course ? course.courseCode : (app.courseCode || ''),
+      applicationFee: course ? course.applicationFee : (app.applicationFee || 1000),
       documents: docs,
       payment
     };

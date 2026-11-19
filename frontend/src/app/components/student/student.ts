@@ -187,10 +187,19 @@ import { ApiService, Application } from '../../services/api.service';
               Database: <span class="badge bg-light text-dark border"><i class="bi bi-fire text-warning me-1"></i>Firebase Cloud Firestore NoSQL</span>
             </div>
             <div class="d-flex gap-2">
-              <!-- If fee not paid -->
-              <a *ngIf="app.payment?.status !== 'SUCCESS'" [routerLink]="['/apply']" [queryParams]="{ step: 3, appId: app.applicationId }" class="btn btn-sm btn-warning fw-bold">
-                <i class="bi bi-credit-card me-1"></i> Pay Application Fee (₹ {{ app.applicationFee }})
-              </a>
+              <!-- If fee not paid: check if required documents uploaded -->
+              <ng-container *ngIf="app.payment?.status !== 'SUCCESS'">
+                <a *ngIf="!app.readiness?.documentsUploaded && (app.documents?.length || 0) < 2"
+                   [routerLink]="['/apply']" [queryParams]="{ step: 2, appId: app.applicationId }"
+                   class="btn btn-sm btn-outline-danger fw-bold">
+                  <i class="bi bi-upload me-1"></i> Upload Required Docs First
+                </a>
+                <a *ngIf="app.readiness?.documentsUploaded || (app.documents?.length || 0) >= 2"
+                   [routerLink]="['/apply']" [queryParams]="{ step: 3, appId: app.applicationId }"
+                   class="btn btn-sm btn-warning fw-bold">
+                  <i class="bi bi-credit-card me-1"></i> Pay Application Fee (₹ {{ app.applicationFee }})
+                </a>
+              </ng-container>
 
               <!-- If approved -> Admit letter -->
               <a *ngIf="app.status === 'APPROVED' || app.status === 'COMPLETED'" [href]="api.getFileUrl('/api/storage/buckets/generated-letters/Admit_Letter_' + app.applicationId + '.html')" target="_blank" class="btn btn-sm btn-success fw-bold">
